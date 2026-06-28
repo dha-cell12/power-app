@@ -48,7 +48,8 @@ try {
   try {
     if (platform === 'win32') {
       console.log('在 Windows 平台构建原生模块...');
-      execSync('npm run build:native-addon', {stdio: 'inherit'});
+      // 显式指定 msvs_version
+      execSync('npm run build:native-addon -- --msvs_version=2022', { stdio: 'inherit' });
     } else if (platform === 'darwin') {
       if (arch === 'arm64') {
         console.log('在 macOS (arm64) 构建原生模块...');

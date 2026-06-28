@@ -41,7 +41,7 @@ jobs:
       fail-fast: false  # 更改为false，允许一个平台失败时其他平台继续
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             arch: x64
             platform: win
           - os: macos-latest
@@ -66,6 +66,7 @@ jobs:
 
       # 配置环境变量
       - name: Configure environment
+        shell: bash
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
           ELECTRON_MIRROR: "https://npmmirror.com/mirrors/electron/"
@@ -121,10 +122,6 @@ jobs:
           cache: npm
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Setup MSVC (Windows)
-        if: matrix.platform == 'win'
-        uses: ilammy/msvc-dev-cmd@v1
-
       - name: Install native modules
         run: npm install --ignore-scripts sqlite3 electron
 
@@ -143,12 +140,16 @@ jobs:
         env:
           ELECTRON_PLATFORM: ${{ env.ELECTRON_PLATFORM }}
           ELECTRON_ARCH: ${{ env.ELECTRON_ARCH }}
+          GYP_MSVS_VERSION: 2022
+          npm_config_msvs_version: 2022
 
       - name: Build Native Addon
         run: node scripts/build-native-addon.js
         env:
           ELECTRON_PLATFORM: ${{ env.ELECTRON_PLATFORM }}
           ELECTRON_ARCH: ${{ env.ELECTRON_ARCH }}
+          GYP_MSVS_VERSION: 2022
+          npm_config_msvs_version: 2022
       # 安装Apple证书
       - name: Install Apple certificates
         if: startsWith(matrix.platform, 'mac')
