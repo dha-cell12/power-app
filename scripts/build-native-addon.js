@@ -106,6 +106,10 @@ try {
   console.log('原生模块构建和组织完成！');
 } catch (error) {
   console.error('构建过程中发生错误:', error);
+  // If we are in CI, we want to fail the build
+  if (process.env.GITHUB_ACTIONS) {
+    process.exit(1);
+  }
   console.error('This is not critical if the addon already exists or will be built later');
   // Don't exit with error code to allow npm install to continue
   process.exit(0);
