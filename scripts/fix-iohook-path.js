@@ -10,14 +10,21 @@ const rootDir = path.join(__dirname, '..');
 const iohookDir = path.join(rootDir, 'node_modules/@tkomde/iohook');
 
 // Detect platform
-const platform = process.platform === 'win32' ? 'win32' : process.platform === 'darwin' ? 'darwin' : 'linux';
+const platform =
+  process.platform === 'win32' ? 'win32' : process.platform === 'darwin' ? 'darwin' : 'linux';
 const arch = process.arch;
 
 // Source path (where electron-rebuild puts it)
 const sourcePath = path.join(iohookDir, 'bin', `${platform}-${arch}-118`, 'iohook.node');
 
 // Target path (where the library expects it)
-const targetDir = path.join(iohookDir, 'builds', `electron-v118-${platform}-${arch}`, 'build', 'Release');
+const targetDir = path.join(
+  iohookDir,
+  'builds',
+  `electron-v118-${platform}-${arch}`,
+  'build',
+  'Release',
+);
 const targetPath = path.join(targetDir, 'iohook.node');
 
 console.log('Fixing @tkomde/iohook binary path...');
@@ -42,7 +49,7 @@ try {
   }
 
   // Create target directory structure
-  fs.mkdirSync(targetDir, { recursive: true });
+  fs.mkdirSync(targetDir, {recursive: true});
 
   // Copy the binary file
   fs.copyFileSync(sourcePath, targetPath);

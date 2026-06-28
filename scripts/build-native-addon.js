@@ -9,7 +9,7 @@
  * 4. Move the built modules to the corresponding directories
  */
 
-const { execSync } = require('child_process');
+const {execSync} = require('child_process');
 const path = require('path');
 const dotenv = require('dotenv');
 
@@ -48,22 +48,22 @@ try {
   try {
     if (platform === 'win32') {
       console.log('Building native module on Windows...');
-      execSync('npm run build:native-addon', { stdio: 'inherit' });
+      execSync('npm run build:native-addon', {stdio: 'inherit'});
     } else if (platform === 'darwin') {
       if (arch === 'arm64') {
         console.log('Building native module on macOS (arm64)...');
-        execSync('npm run build:native-addon:mac-arm64', { stdio: 'inherit' });
+        execSync('npm run build:native-addon:mac-arm64', {stdio: 'inherit'});
       } else if (arch === 'x64') {
         console.log('Building native module on macOS (x64)...');
-        execSync('npm run build:native-addon:mac-x64', { stdio: 'inherit' });
+        execSync('npm run build:native-addon:mac-x64', {stdio: 'inherit'});
       } else {
         console.log(`Building native module on macOS (${arch})...`);
-        execSync('npm run build:native-addon', { stdio: 'inherit' });
+        execSync('npm run build:native-addon', {stdio: 'inherit'});
       }
     } else {
       // Handling for other platforms
       console.log(`Building native module on ${platform}...`);
-      execSync('npm run build:native-addon', { stdio: 'inherit' });
+      execSync('npm run build:native-addon', {stdio: 'inherit'});
     }
   } catch (buildError) {
     // Check if source file exists even though build failed
@@ -73,34 +73,34 @@ try {
       throw buildError;
     }
   }
-  
+
   console.log('Build command execution complete, checking output files...');
 
   // List directory contents using command line
   if (platform === 'win32') {
-    execSync(`dir "${buildDir}"`, { stdio: 'inherit' });
-    execSync(`dir "${releaseDir}"`, { stdio: 'inherit' });
+    execSync(`dir "${buildDir}"`, {stdio: 'inherit'});
+    execSync(`dir "${releaseDir}"`, {stdio: 'inherit'});
   } else {
-    execSync(`ls -la "${buildDir}"`, { stdio: 'inherit' });
-    execSync(`ls -la "${releaseDir}"`, { stdio: 'inherit' });
+    execSync(`ls -la "${buildDir}"`, {stdio: 'inherit'});
+    execSync(`ls -la "${releaseDir}"`, {stdio: 'inherit'});
   }
 
   // Create target directory and copy files using command line
   console.log('Creating target directory and copying files...');
   if (platform === 'win32') {
-    execSync(`mkdir "${targetDir}" 2>nul || echo "Directory already exists"`, { stdio: 'inherit' });
-    execSync(`copy "${sourcePath}" "${targetDir}\\window-addon.node"`, { stdio: 'inherit' });
+    execSync(`mkdir "${targetDir}" 2>nul || echo "Directory already exists"`, {stdio: 'inherit'});
+    execSync(`copy "${sourcePath}" "${targetDir}\\window-addon.node"`, {stdio: 'inherit'});
   } else {
-    execSync(`mkdir -p "${targetDir}"`, { stdio: 'inherit' });
-    execSync(`cp "${sourcePath}" "${targetDir}/window-addon.node"`, { stdio: 'inherit' });
+    execSync(`mkdir -p "${targetDir}"`, {stdio: 'inherit'});
+    execSync(`cp "${sourcePath}" "${targetDir}/window-addon.node"`, {stdio: 'inherit'});
   }
 
   // Verify file has been copied
   console.log('Verifying file copy...');
   if (platform === 'win32') {
-    execSync(`dir "${targetDir}"`, { stdio: 'inherit' });
+    execSync(`dir "${targetDir}"`, {stdio: 'inherit'});
   } else {
-    execSync(`ls -la "${targetDir}"`, { stdio: 'inherit' });
+    execSync(`ls -la "${targetDir}"`, {stdio: 'inherit'});
   }
 
   console.log('Native module build and organization complete!');

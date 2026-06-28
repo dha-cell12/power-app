@@ -26,15 +26,10 @@ async function main() {
         'Local Storage',
         'IndexedDB',
       ];
-      
+
       // List of files to copy
-      const filesToMove = [
-        'Bookmarks',
-        'Bookmarks.bak',
-        'History',
-        'History-journal',
-      ];
-      
+      const filesToMove = ['Bookmarks', 'Bookmarks.bak', 'History', 'History-journal'];
+
       // Copy folders
       for (const folder of foldersToMove) {
         const source = path.join(fromDir, folder);
@@ -58,7 +53,7 @@ async function main() {
 
         if (await fs.pathExists(source)) {
           console.log(`Copying file: ${file} (${window.profile_id})`);
-          await fs.copy(source, destination, { overwrite: true });
+          await fs.copy(source, destination, {overwrite: true});
         } else {
           console.log(`Source file does not exist: ${file} (${window.profile_id})`);
         }

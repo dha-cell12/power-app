@@ -26,7 +26,7 @@ vi.mock('electron', () => {
     getAppPath(): string {
       return '';
     },
-    getPath(name: string): string {
+    getPath(_name: string): string {
       return '';
     },
   };

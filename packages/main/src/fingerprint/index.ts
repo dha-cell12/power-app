@@ -3,7 +3,7 @@ import {ProxyDB} from '../db/proxy';
 import {WindowDB} from '../db/window';
 // import {getChromePath} from './device';
 import {BrowserWindow} from 'electron';
-import puppeteer, {Browser} from 'puppeteer';
+import puppeteer from 'puppeteer';
 import {execSync, spawn} from 'child_process';
 import * as portscanner from 'portscanner';
 import {sleep} from '../utils/sleep';
@@ -12,18 +12,16 @@ import type {DB} from '../../../shared/types/db';
 import {type IncomingMessage, type Server, type ServerResponse} from 'http';
 import {createLogger} from '../../../shared/utils/logger';
 import {WINDOW_LOGGER_LABEL} from '../constants';
-import {db} from '../db';
 import {getProxyInfo} from './prepare';
 import * as ProxyChain from 'proxy-chain';
 import {getSettings} from '../utils/get-settings';
 // import {randomFingerprint} from '../services/window-service';
-import {bridgeMessageToUI, getClientPort, getMainWindow} from '../mainWindow';
+import {bridgeMessageToUI, getMainWindow} from '../mainWindow';
 import {Mutex} from 'async-mutex';
 // import {presetCookie} from '../puppeteer/helpers';
 import {existsSync, mkdirSync} from 'fs';
 import api from '../../../shared/api/api';
 import {ExtensionDB} from '../db/extension';
-import { getPort } from '../server';
 
 const mutex = new Mutex();
 
@@ -198,13 +196,17 @@ export async function openFingerprintWindow(id: number, headless = false) {
     const win = BrowserWindow.getAllWindows()[0];
     // Prioritize window-level Chrome settings, otherwise use global settings
     // If localChromePath is specified, use local Chrome mode
-    const useLocalChrome = windowData?.localChromePath ? true : (windowData.useLocalChrome ?? settings.useLocalChrome);
+    const useLocalChrome = windowData?.localChromePath
+      ? true
+      : (windowData.useLocalChrome ?? settings.useLocalChrome);
     const windowDataDir = join(
       cachePath,
-      windowData?.localChromePath ? 'chrome' : (useLocalChrome ? 'chrome' : 'chromium'),
+      windowData?.localChromePath ? 'chrome' : useLocalChrome ? 'chrome' : 'chromium',
       windowData.profile_id,
     );
-    logger.info(`Opening window with profile_id: ${windowData.profile_id}, userDataDir: ${windowDataDir}`);
+    logger.info(
+      `Opening window with profile_id: ${windowData.profile_id}, userDataDir: ${windowDataDir}`,
+    );
 
     // Ensure directory exists and set correct permissions
     if (!existsSync(windowDataDir)) {
@@ -326,7 +328,6 @@ export async function openFingerprintWindow(id: number, headless = false) {
       }
       // const iconPath = await generateChromeIcon(windowDataDir, id);
 
-
       let chromeInstance;
       try {
         // if (isMac) {
@@ -385,7 +386,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
       try {
         const browserURL = `http://${HOST}:${chromePort}`;
         const {data} = await api.get(browserURL + '/json/version');
-        
+
         const now = new Date().toISOString();
         logger.info(`Updating window ${windowData.id} with opened_at: ${now}`);
         const updateResult = await WindowDB.update(windowData.id, {
@@ -554,16 +555,16 @@ export async function closeFingerprintWindow(id: number, force = false) {
  */
 export async function focusFingerprintWindow(id: number) {
   const windowData = await WindowDB.getById(id);
-  
+
   if (!windowData || windowData.status !== 2 || !windowData.port) {
     logger.warn(`Window ${id} is not running, cannot focus`);
-    return { success: false, message: 'Window is not running' };
+    return {success: false, message: 'Window is not running'};
   }
 
   try {
     const browserURL = `http://${HOST}:${windowData.port}`;
     const {data} = await api.get(browserURL + '/json/version');
-    
+
     if (data) {
       const browser = await puppeteer.connect({
         browserWSEndpoint: data.webSocketDebuggerUrl,
@@ -579,19 +580,19 @@ export async function focusFingerprintWindow(id: number) {
         // Try using CDP to minimize then restore (more forced topping)
         try {
           const client = await page.createCDPSession();
-          const { windowId } = await client.send('Browser.getWindowForTarget', {
-            targetId: (page.target() as any)._targetId,
+          const {windowId} = await client.send('Browser.getWindowForTarget', {
+            targetId: (page.target() as SafeAny)._targetId,
           });
 
           // Minimize then restore
           await client.send('Browser.setWindowBounds', {
             windowId,
-            bounds: { windowState: 'minimized' },
+            bounds: {windowState: 'minimized'},
           });
           await new Promise(resolve => setTimeout(resolve, 100));
           await client.send('Browser.setWindowBounds', {
             windowId,
-            bounds: { windowState: 'normal' },
+            bounds: {windowState: 'normal'},
           });
 
           await client.detach();
@@ -599,25 +600,24 @@ export async function focusFingerprintWindow(id: number) {
           // CDP failure does not affect, continue using bringToFront
           logger.warn(`CDP focus failed, using basic bringToFront: ${cdpError}`);
         }
-        
+
         logger.info(`Window ${id} focused and brought to top`);
       }
       await browser.disconnect();
-      return { success: true };
+      return {success: true};
     }
   } catch (error) {
     logger.error(`Failed to focus window ${id}:`, error);
-    return { success: false, message: String(error) };
+    return {success: false, message: String(error)};
   }
 
-  return { success: false, message: 'Window not accessible' };
+  return {success: false, message: 'Window not accessible'};
 }
 
 export default {
   openFingerprintWindow,
 
   closeFingerprintWindow,
-  
+
   focusFingerprintWindow,
 };
-

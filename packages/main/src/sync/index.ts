@@ -29,7 +29,7 @@ export const arrangeWindows = async () => {
 };
 
 // export const startGroupControl = async (masterProcessId?: number, slaveProcessIds?: number[]) => {
-  
+
 // };
 
 // Create a function to receive messages from native plugin

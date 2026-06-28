@@ -104,7 +104,7 @@ module.exports = async function () {
         },
       ],
       category: 'public.app-category.developer-tools',
-      hardenedRuntime: true, 
+      hardenedRuntime: true,
       gatekeeperAssess: false,
       entitlements: 'buildResources/entitlements.mac.plist',
       entitlementsInherit: 'buildResources/entitlements.mac.plist',
@@ -127,25 +127,31 @@ module.exports = async function () {
     },
 
     // Copy window-addon.node to the final directory after packing
-    afterPack: async (context) => {
+    afterPack: async context => {
       const fs = require('fs');
       const path = require('path');
-      const { electronPlatformName, arch, appOutDir } = context;
+      const {electronPlatformName, arch, appOutDir} = context;
 
       // electron-builder's arch is a numeric enum, need to convert to string
-      const archMap = { 0: 'ia32', 1: 'x64', 2: 'armv7l', 3: 'arm64', 4: 'universal' };
+      const archMap = {0: 'ia32', 1: 'x64', 2: 'armv7l', 3: 'arm64', 4: 'universal'};
       const archString = archMap[arch] || String(arch);
 
       console.log(`Copying window-addon for ${electronPlatformName}-${archString}...`);
 
       // Native addon build artifacts are directly in the Release directory, without platform/arch subdirectories
-      const sourcePath = path.join(__dirname, 'packages/main/src/native-addon/build/Release/window-addon.node');
+      const sourcePath = path.join(
+        __dirname,
+        'packages/main/src/native-addon/build/Release/window-addon.node',
+      );
 
       // Mac apps have a .app bundle structure, path needs special handling
       let targetDir;
       if (electronPlatformName === 'darwin') {
         const appName = context.packager.appInfo.productFilename;
-        targetDir = path.join(appOutDir, `${appName}.app/Contents/Resources/app.asar.unpacked/node_modules/window-addon`);
+        targetDir = path.join(
+          appOutDir,
+          `${appName}.app/Contents/Resources/app.asar.unpacked/node_modules/window-addon`,
+        );
       } else {
         targetDir = path.join(appOutDir, 'resources/app.asar.unpacked/node_modules/window-addon');
       }
@@ -161,7 +167,7 @@ module.exports = async function () {
 
         // Create target directory
         if (!fs.existsSync(targetDir)) {
-          fs.mkdirSync(targetDir, { recursive: true });
+          fs.mkdirSync(targetDir, {recursive: true});
           console.log(`Created directory: ${targetDir}`);
         }
 

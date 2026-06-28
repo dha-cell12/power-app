@@ -20,7 +20,6 @@ async function randomWait(min, max) {
 // Main automation script function
 export async function autoScript(browser) {
   try {
-
   } catch (error) {
     console.error('Error executing automation script:', error);
   }

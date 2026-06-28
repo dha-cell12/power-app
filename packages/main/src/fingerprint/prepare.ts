@@ -13,20 +13,25 @@ import {db} from '../db';
 import {getOrigin} from '../server';
 import {bridgeMessageToUI} from '../mainWindow';
 import type {AxiosProxyConfig} from 'axios';
-import { exec } from 'child_process';
+import {exec} from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
 
 const logger = createLogger(PROXY_LOGGER_LABEL);
 
-export async function createShortcutWithIcon(exePath: string, args: string[], iconPath: string, shortcutPath: string) {
+export async function createShortcutWithIcon(
+  exePath: string,
+  args: string[],
+  iconPath: string,
+  shortcutPath: string,
+) {
   try {
     const shortcutDir = path.dirname(shortcutPath);
 
     // Ensure directory exists
     if (!fs.existsSync(shortcutDir)) {
-      fs.mkdirSync(shortcutDir, { recursive: true });
+      fs.mkdirSync(shortcutDir, {recursive: true});
     }
 
     // PowerShell script to create shortcut
@@ -58,20 +63,27 @@ export async function createShortcutWithIcon(exePath: string, args: string[], ic
     // Write script to temporary file to avoid command line length limits
     const tempScriptPath = path.join(os.tmpdir(), `create_shortcut_${Date.now()}.ps1`);
     fs.writeFileSync(tempScriptPath, psScript);
-    
-    return new Promise((resolve, reject) => {
-      exec(`powershell -ExecutionPolicy Bypass -File "${tempScriptPath}"`, (error, stdout, stderr) => {
-        // Clean up temporary script file
-        try { fs.unlinkSync(tempScriptPath); } catch (e) { /* Ignore deletion failure */ }
 
-        if (error) {
-          logger.error(`Failed to create shortcut: ${stderr}`);
-          reject(error);
-        } else {
-          logger.info(`Shortcut created successfully: ${shortcutPath}`);
-          resolve(shortcutPath);
-        }
-      });
+    return new Promise((resolve, reject) => {
+      exec(
+        `powershell -ExecutionPolicy Bypass -File "${tempScriptPath}"`,
+        (error, stdout, stderr) => {
+          // Clean up temporary script file
+          try {
+            fs.unlinkSync(tempScriptPath);
+          } catch (e) {
+            /* Ignore deletion failure */
+          }
+
+          if (error) {
+            logger.error(`Failed to create shortcut: ${stderr}`);
+            reject(error);
+          } else {
+            logger.info(`Shortcut created successfully: ${shortcutPath}`);
+            resolve(shortcutPath);
+          }
+        },
+      );
     });
   } catch (error) {
     logger.error(`Exception creating shortcut: ${error}`);
@@ -83,7 +95,7 @@ const getRealIP = async (proxy: DB.Proxy) => {
   if (!proxy.proxy) {
     return '';
   }
-  
+
   let agent:
     | SocksProxyAgent
     | HttpProxyAgent<`http://${string}:${string}`>

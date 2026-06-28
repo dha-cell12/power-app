@@ -81,7 +81,9 @@ interface SyncOptions {
 let windowAddon: SafeAny;
 try {
   if (!app.isPackaged) {
-    windowAddon = require(path.join(__dirname, '../src/native-addon/build/Release/', 'window-addon.node'));
+    windowAddon = require(
+      path.join(__dirname, '../src/native-addon/build/Release/', 'window-addon.node'),
+    );
   } else {
     const addonPath = path.join(
       process.resourcesPath,
@@ -266,7 +268,9 @@ class MultiWindowSyncService {
         height: masterBounds.height,
         pid: this.masterWindowPid,
       };
-      logger.info(`Master window bounds: PID=${this.masterWindowPid}, ${masterBounds.x},${masterBounds.y} ${masterBounds.width}x${masterBounds.height}`);
+      logger.info(
+        `Master window bounds: PID=${this.masterWindowPid}, ${masterBounds.x},${masterBounds.y} ${masterBounds.width}x${masterBounds.height}`,
+      );
     } else {
       logger.warn(`Master window bounds not found: PID=${this.masterWindowPid}`);
     }
@@ -290,7 +294,9 @@ class MultiWindowSyncService {
         logger.warn(`Slave window bounds not found: PID=${slavePid}`);
       }
     }
-    logger.info(`Slave windows: found=${foundSlaves}, missing=${missingSlaves}, total selected=${this.slaveWindowPids.size}`);
+    logger.info(
+      `Slave windows: found=${foundSlaves}, missing=${missingSlaves}, total selected=${this.slaveWindowPids.size}`,
+    );
   }
 
   /**
@@ -374,8 +380,7 @@ class MultiWindowSyncService {
       const masterWindows = this.windowManager.getAllWindows(this.masterWindowPid);
       for (const win of masterWindows) {
         if (win.isExtension) {
-          if (x >= win.x && x <= win.x + win.width &&
-              y >= win.y && y <= win.y + win.height) {
+          if (x >= win.x && x <= win.x + win.width && y >= win.y && y <= win.y + win.height) {
             return true;
           }
         }
@@ -454,17 +459,25 @@ class MultiWindowSyncService {
 
       const eventType = button === 1 ? 'mousedown' : button === 2 ? 'rightdown' : 'mousedown';
 
-      devLogger.info(`🖱️ Mouse ${eventType} at (${x}, ${y}), button=${button}, slaves=${this.slaveWindowPids.size}`);
+      devLogger.info(
+        `🖱️ Mouse ${eventType} at (${x}, ${y}), button=${button}, slaves=${this.slaveWindowPids.size}`,
+      );
 
       // Check if mouse is in master extension window
       let inMasterExtension = false;
-      let masterExtensionBounds: {x: number; y: number; width: number; height: number} | null = null;
+      let masterExtensionBounds: {x: number; y: number; width: number; height: number} | null =
+        null;
 
       try {
         const masterWindows = this.windowManager.getAllWindows(this.masterWindowPid);
         for (const win of masterWindows) {
-          if (win.isExtension && x >= win.x && x <= win.x + win.width &&
-              y >= win.y && y <= win.y + win.height) {
+          if (
+            win.isExtension &&
+            x >= win.x &&
+            x <= win.x + win.width &&
+            y >= win.y &&
+            y <= win.y + win.height
+          ) {
             inMasterExtension = true;
             masterExtensionBounds = {x: win.x, y: win.y, width: win.width, height: win.height};
             devLogger.debug(`🖱️ Mouse in master extension window: "${win.title}"`);
@@ -489,7 +502,9 @@ class MultiWindowSyncService {
                 const slaveX = Math.floor(win.x + relX * win.width);
                 const slaveY = Math.floor(win.y + relY * win.height);
 
-                devLogger.debug(`→ Sending ${eventType} to slave ${slavePid} extension at (${slaveX}, ${slaveY})`);
+                devLogger.debug(
+                  `→ Sending ${eventType} to slave ${slavePid} extension at (${slaveX}, ${slaveY})`,
+                );
 
                 this.windowManager.sendMouseEvent(slavePid, slaveX, slaveY, 'mousemove');
                 setTimeout(() => {
@@ -519,7 +534,9 @@ class MultiWindowSyncService {
             setTimeout(() => {
               try {
                 this.windowManager.sendMouseEvent(slavePid, slavePos.x, slavePos.y, eventType);
-                devLogger.debug(`→ Sent ${eventType} to slave ${slavePid} at (${slavePos.x}, ${slavePos.y})`);
+                devLogger.debug(
+                  `→ Sent ${eventType} to slave ${slavePid} at (${slavePos.x}, ${slavePos.y})`,
+                );
               } catch (error) {
                 logger.error(`Failed to send ${eventType} to slave ${slavePid}:`, error);
               }
@@ -554,17 +571,25 @@ class MultiWindowSyncService {
 
       const eventType = button === 1 ? 'mouseup' : button === 2 ? 'rightup' : 'mouseup';
 
-      devLogger.info(`🖱️ Mouse ${eventType} at (${x}, ${y}), button=${button}, slaves=${this.slaveWindowPids.size}`);
+      devLogger.info(
+        `🖱️ Mouse ${eventType} at (${x}, ${y}), button=${button}, slaves=${this.slaveWindowPids.size}`,
+      );
 
       // Check if mouse is in master extension window
       let inMasterExtension = false;
-      let masterExtensionBounds: {x: number; y: number; width: number; height: number} | null = null;
+      let masterExtensionBounds: {x: number; y: number; width: number; height: number} | null =
+        null;
 
       try {
         const masterWindows = this.windowManager.getAllWindows(this.masterWindowPid);
         for (const win of masterWindows) {
-          if (win.isExtension && x >= win.x && x <= win.x + win.width &&
-              y >= win.y && y <= win.y + win.height) {
+          if (
+            win.isExtension &&
+            x >= win.x &&
+            x <= win.x + win.width &&
+            y >= win.y &&
+            y <= win.y + win.height
+          ) {
             inMasterExtension = true;
             masterExtensionBounds = {x: win.x, y: win.y, width: win.width, height: win.height};
             break;
@@ -587,7 +612,9 @@ class MultiWindowSyncService {
                 const slaveX = Math.floor(win.x + relX * win.width);
                 const slaveY = Math.floor(win.y + relY * win.height);
 
-                devLogger.debug(`→ Sending ${eventType} to slave ${slavePid} extension at (${slaveX}, ${slaveY})`);
+                devLogger.debug(
+                  `→ Sending ${eventType} to slave ${slavePid} extension at (${slaveX}, ${slaveY})`,
+                );
                 this.windowManager.sendMouseEvent(slavePid, slaveX, slaveY, eventType);
                 break;
               }
@@ -604,7 +631,9 @@ class MultiWindowSyncService {
         for (const [slavePid, slaveBounds] of this.slaveWindowBounds) {
           const slavePos = this.applyToSlaveWindow(ratio, slaveBounds);
           try {
-            devLogger.debug(`→ Sending ${eventType} to slave ${slavePid} at (${slavePos.x}, ${slavePos.y})`);
+            devLogger.debug(
+              `→ Sending ${eventType} to slave ${slavePid} at (${slavePos.x}, ${slavePos.y})`,
+            );
             this.windowManager.sendMouseEvent(slavePid, slavePos.x, slavePos.y, eventType);
           } catch (error) {
             logger.error(`Failed to send mouse up event to slave ${slavePid}:`, error);
@@ -691,13 +720,19 @@ class MultiWindowSyncService {
 
       // Check if mouse is in master extension window
       let inMasterExtension = false;
-      let masterExtensionBounds: {x: number; y: number; width: number; height: number} | null = null;
+      let masterExtensionBounds: {x: number; y: number; width: number; height: number} | null =
+        null;
 
       try {
         const masterWindows = this.windowManager.getAllWindows(this.masterWindowPid);
         for (const win of masterWindows) {
-          if (win.isExtension && x >= win.x && x <= win.x + win.width &&
-              y >= win.y && y <= win.y + win.height) {
+          if (
+            win.isExtension &&
+            x >= win.x &&
+            x <= win.x + win.width &&
+            y >= win.y &&
+            y <= win.y + win.height
+          ) {
             inMasterExtension = true;
             masterExtensionBounds = {x: win.x, y: win.y, width: win.width, height: win.height};
             break;
@@ -837,10 +872,11 @@ class MultiWindowSyncService {
 
       // Deduplication: Check if this is a duplicate event
       const now = Date.now();
-      const isDuplicate = this.lastKeyEvent &&
-          this.lastKeyEvent.keycode === nativeKeycode &&
-          this.lastKeyEvent.type === 'keydown' &&
-          now - this.lastKeyEvent.time < this.KEY_DEDUP_THRESHOLD_MS;
+      const isDuplicate =
+        this.lastKeyEvent &&
+        this.lastKeyEvent.keycode === nativeKeycode &&
+        this.lastKeyEvent.type === 'keydown' &&
+        now - this.lastKeyEvent.time < this.KEY_DEDUP_THRESHOLD_MS;
 
       if (isDuplicate) {
         logger.warn('⚠️  DUPLICATE keydown detected and ignored', {
@@ -867,19 +903,26 @@ class MultiWindowSyncService {
           logger.error('Available methods:', Object.keys(this.windowManager));
         } else {
           const masterPopups = this.windowManager.getAllWindows(this.masterWindowPid);
-          devLogger.debug(`🔍 Master PID ${this.masterWindowPid} has ${masterPopups.length} windows`);
+          devLogger.debug(
+            `🔍 Master PID ${this.masterWindowPid} has ${masterPopups.length} windows`,
+          );
 
           for (const win of masterPopups) {
-            devLogger.debug(`  Window: isExtension=${win.isExtension}, bounds=[${win.x}, ${win.y}, ${win.width}, ${win.height}], title="${win.title || 'unknown'}"`);
+            devLogger.debug(
+              `  Window: isExtension=${win.isExtension}, bounds=[${win.x}, ${win.y}, ${win.width}, ${win.height}], title="${win.title || 'unknown'}"`,
+            );
 
             if (win.isExtension) {
               const {x: wx, y: wy, width, height} = win;
-              const inBounds = this.lastMouseX >= wx &&
-                              this.lastMouseX <= wx + width &&
-                              this.lastMouseY >= wy &&
-                              this.lastMouseY <= wy + height;
+              const inBounds =
+                this.lastMouseX >= wx &&
+                this.lastMouseX <= wx + width &&
+                this.lastMouseY >= wy &&
+                this.lastMouseY <= wy + height;
 
-              devLogger.debug(`    Mouse (${this.lastMouseX}, ${this.lastMouseY}) in popup bounds? ${inBounds}`);
+              devLogger.debug(
+                `    Mouse (${this.lastMouseX}, ${this.lastMouseY}) in popup bounds? ${inBounds}`,
+              );
 
               if (inBounds) {
                 inMasterPopup = true;
@@ -926,19 +969,35 @@ class MultiWindowSyncService {
             let sentToPopup = false;
 
             for (const win of slavePopups) {
-              devLogger.debug(`  Slave window: isExtension=${win.isExtension}, bounds=[${win.x}, ${win.y}, ${win.width}, ${win.height}], title="${win.title || 'unknown'}"`);
+              devLogger.debug(
+                `  Slave window: isExtension=${win.isExtension}, bounds=[${win.x}, ${win.y}, ${win.width}, ${win.height}], title="${win.title || 'unknown'}"`,
+              );
 
               if (win.isExtension) {
                 // Apply relative position to slave extension window
                 const slaveX = Math.floor(win.x + relX * win.width);
                 const slaveY = Math.floor(win.y + relY * win.height);
 
-                devLogger.info(`  ✅ Routing to slave ${slavePid} popup "${win.title}" at (${slaveX}, ${slaveY}) [rel: ${(relX*100).toFixed(1)}%, ${(relY*100).toFixed(1)}%]`);
+                devLogger.info(
+                  `  ✅ Routing to slave ${slavePid} popup "${win.title}" at (${slaveX}, ${slaveY}) [rel: ${(relX * 100).toFixed(1)}%, ${(relY * 100).toFixed(1)}%]`,
+                );
 
-                this.windowManager.sendKeyboardEvent(slavePid, nativeKeycode, 'keydown', slaveX, slaveY);
+                this.windowManager.sendKeyboardEvent(
+                  slavePid,
+                  nativeKeycode,
+                  'keydown',
+                  slaveX,
+                  slaveY,
+                );
                 setTimeout(() => {
                   try {
-                    this.windowManager.sendKeyboardEvent(slavePid, nativeKeycode, 'keyup', slaveX, slaveY);
+                    this.windowManager.sendKeyboardEvent(
+                      slavePid,
+                      nativeKeycode,
+                      'keyup',
+                      slaveX,
+                      slaveY,
+                    );
                   } catch (error) {
                     logger.error(`Failed to send keyup to slave ${slavePid}:`, error);
                   }
@@ -968,14 +1027,18 @@ class MultiWindowSyncService {
 
             if (slaveBounds && this.masterWindowBounds) {
               // Calculate relative position in master window
-              const relX = (this.lastMouseX - this.masterWindowBounds.x) / this.masterWindowBounds.width;
-              const relY = (this.lastMouseY - this.masterWindowBounds.y) / this.masterWindowBounds.height;
+              const relX =
+                (this.lastMouseX - this.masterWindowBounds.x) / this.masterWindowBounds.width;
+              const relY =
+                (this.lastMouseY - this.masterWindowBounds.y) / this.masterWindowBounds.height;
 
               // Apply to slave window
               const slaveX = Math.floor(slaveBounds.x + relX * slaveBounds.width);
               const slaveY = Math.floor(slaveBounds.y + relY * slaveBounds.height);
 
-              devLogger.debug(`  → Sending key press to slave ${slavePid} main window at (${slaveX}, ${slaveY})`);
+              devLogger.debug(
+                `  → Sending key press to slave ${slavePid} main window at (${slaveX}, ${slaveY})`,
+              );
 
               // First send a mousemove to ensure focus is correct (for browser-internal popups)
               try {
@@ -987,10 +1050,22 @@ class MultiWindowSyncService {
               // Small delay before sending keyboard event
               setTimeout(() => {
                 try {
-                  this.windowManager.sendKeyboardEvent(slavePid, nativeKeycode, 'keydown', slaveX, slaveY);
+                  this.windowManager.sendKeyboardEvent(
+                    slavePid,
+                    nativeKeycode,
+                    'keydown',
+                    slaveX,
+                    slaveY,
+                  );
                   setTimeout(() => {
                     try {
-                      this.windowManager.sendKeyboardEvent(slavePid, nativeKeycode, 'keyup', slaveX, slaveY);
+                      this.windowManager.sendKeyboardEvent(
+                        slavePid,
+                        nativeKeycode,
+                        'keyup',
+                        slaveX,
+                        slaveY,
+                      );
                     } catch (error) {
                       logger.error(`Failed to send keyup to slave ${slavePid}:`, error);
                     }
@@ -1068,10 +1143,11 @@ class MultiWindowSyncService {
 
       // Deduplication: Check if this is a duplicate event
       const now = Date.now();
-      const isDuplicate = this.lastKeyEvent &&
-          this.lastKeyEvent.keycode === nativeKeycode &&
-          this.lastKeyEvent.type === 'keyup' &&
-          now - this.lastKeyEvent.time < this.KEY_DEDUP_THRESHOLD_MS;
+      const isDuplicate =
+        this.lastKeyEvent &&
+        this.lastKeyEvent.keycode === nativeKeycode &&
+        this.lastKeyEvent.type === 'keyup' &&
+        now - this.lastKeyEvent.time < this.KEY_DEDUP_THRESHOLD_MS;
 
       if (isDuplicate) {
         logger.warn('⚠️  DUPLICATE keyup detected and ignored', {
@@ -1123,7 +1199,6 @@ class MultiWindowSyncService {
     };
   }
 
-
   /**
    * Start CDP-based synchronization
    * This connects to Chrome instances via CDP and syncs page scrolling
@@ -1142,7 +1217,10 @@ class MultiWindowSyncService {
           });
           this.cdpBrowsers.set(this.masterWindowPid, browser);
         } catch (error) {
-          logger.error(`Failed to connect to master window CDP on port ${masterWindow.debug_port}:`, error);
+          logger.error(
+            `Failed to connect to master window CDP on port ${masterWindow.debug_port}:`,
+            error,
+          );
         }
       }
 
@@ -1157,7 +1235,10 @@ class MultiWindowSyncService {
             });
             this.cdpBrowsers.set(slavePid, browser);
           } catch (error) {
-            logger.error(`Failed to connect to slave window CDP on port ${slaveWindow.debug_port}:`, error);
+            logger.error(
+              `Failed to connect to slave window CDP on port ${slaveWindow.debug_port}:`,
+              error,
+            );
           }
         }
       }
@@ -1263,31 +1344,32 @@ export const initMultiWindowSyncService = () => {
   logger.info('Initializing multi-window sync service...');
 
   // Start sync
-  ipcMain.handle('multi-window-sync-start', async (_, args: {masterWindowId: number; slaveWindowIds: number[]}) => {
-    try {
-      const {masterWindowId, slaveWindowIds} = args;
+  ipcMain.handle(
+    'multi-window-sync-start',
+    async (_, args: {masterWindowId: number; slaveWindowIds: number[]}) => {
+      try {
+        const {masterWindowId, slaveWindowIds} = args;
 
-      // Get window PIDs from database
-      const masterWindow = await WindowDB.getById(masterWindowId);
-      if (!masterWindow || !masterWindow.pid) {
-        return {success: false, error: 'Master window not found or not running'};
+        // Get window PIDs from database
+        const masterWindow = await WindowDB.getById(masterWindowId);
+        if (!masterWindow || !masterWindow.pid) {
+          return {success: false, error: 'Master window not found or not running'};
+        }
+
+        const slaveWindows = await Promise.all(slaveWindowIds.map(id => WindowDB.getById(id)));
+        const slavePids = slaveWindows.filter(w => w && w.pid).map(w => w!.pid as number);
+
+        if (slavePids.length === 0) {
+          return {success: false, error: 'No valid slave windows found'};
+        }
+
+        return await syncService.startSync(masterWindow.pid, slavePids);
+      } catch (error) {
+        logger.error('Error starting sync:', error);
+        return {success: false, error: error instanceof Error ? error.message : 'Unknown error'};
       }
-
-      const slaveWindows = await Promise.all(slaveWindowIds.map(id => WindowDB.getById(id)));
-      const slavePids = slaveWindows
-        .filter(w => w && w.pid)
-        .map(w => w!.pid as number);
-
-      if (slavePids.length === 0) {
-        return {success: false, error: 'No valid slave windows found'};
-      }
-
-      return await syncService.startSync(masterWindow.pid, slavePids);
-    } catch (error) {
-      logger.error('Error starting sync:', error);
-      return {success: false, error: error instanceof Error ? error.message : 'Unknown error'};
-    }
-  });
+    },
+  );
 
   // Stop sync
   ipcMain.handle('multi-window-sync-stop', async () => {

@@ -1,12 +1,9 @@
 import {app, ipcMain, systemPreferences, shell} from 'electron';
 import path from 'path';
 import type {SafeAny} from '../../../shared/types/db';
-import { createLogger } from '../../../shared/utils/logger';
-import { MAIN_LOGGER_LABEL } from '../constants';
-import { dialog } from 'electron';
-import puppeteer from 'puppeteer';
-import api from '../../../shared/api/api';
-import {HOST} from '../mainWindow';
+import {createLogger} from '../../../shared/utils/logger';
+import {MAIN_LOGGER_LABEL} from '../constants';
+import {dialog} from 'electron';
 
 const logger = createLogger(MAIN_LOGGER_LABEL);
 let addon: unknown;
@@ -16,7 +13,7 @@ if (!app.isPackaged) {
 } else {
   // Production environment: choose correct path based on platform and architecture
   // const addonDir = `${process.platform}-${process.arch}`;
-  
+
   const addonPath = path.join(
     process.resourcesPath,
     'app.asar.unpacked/node_modules/window-addon/',
@@ -46,21 +43,26 @@ export const initSyncService = () => {
     if (!hasPermission) {
       // Prompt user to grant permission at app startup
       logger.warn('App needs accessibility permissions to arrange windows');
-      dialog.showMessageBox({
-        type: 'warning',
-        title: 'Accessibility Permissions Required',
-        message: 'Please grant the app accessibility permissions in System Preferences to enable window arrangement features.',
-        buttons: ['Go to Settings', 'Later'],
-        defaultId: 0,
-      }).then(({ response }) => {
-        if (response === 0) {
-          // Open accessibility settings
-          shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility');
-        }
-      });
+      dialog
+        .showMessageBox({
+          type: 'warning',
+          title: 'Accessibility Permissions Required',
+          message:
+            'Please grant the app accessibility permissions in System Preferences to enable window arrangement features.',
+          buttons: ['Go to Settings', 'Later'],
+          defaultId: 0,
+        })
+        .then(({response}) => {
+          if (response === 0) {
+            // Open accessibility settings
+            shell.openExternal(
+              'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility',
+            );
+          }
+        });
     }
   }
-  
+
   const windowManager = new (addon as SafeAny).WindowManager();
 
   logger.info('WindowManager initialized');

@@ -9,7 +9,6 @@ import {getOrigin} from '../server';
 import axios from 'axios';
 import {writeFile} from 'fs/promises';
 
-
 const logger = createLogger(SERVICE_LOGGER_LABEL);
 
 export const initCommonService = () => {
