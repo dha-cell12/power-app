@@ -76,6 +76,7 @@ jobs:
           if [ "${{ matrix.platform }}" == "win" ]; then
             echo "ELECTRON_PLATFORM=win32" >> $GITHUB_ENV
             echo "ELECTRON_ARCH=x64" >> $GITHUB_ENV
+            echo "GYP_MSVS_VERSION=2022" >> $GITHUB_ENV
           elif [ "${{ matrix.platform }}" == "mac-arm64" ]; then
             echo "ELECTRON_PLATFORM=darwin" >> $GITHUB_ENV
             echo "ELECTRON_ARCH=arm64" >> $GITHUB_ENV
