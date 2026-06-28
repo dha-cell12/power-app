@@ -1,4 +1,4 @@
-/* ==================== 页面容器样式 ==================== */
+/* ==================== Page Container Styles ==================== */
 
 .page-container {
   display: flex;
@@ -24,12 +24,12 @@
   min-height: 0;
 }
 
-/* Content 区域通用 padding */
+/* General padding for Content area */
 .ant-layout-content {
   padding: 10px;
 }
 
-/* ==================== Header 样式 ==================== */
+/* ==================== Header Styles ==================== */
 
 .app-header {
   display: flex;
@@ -62,7 +62,7 @@
   height: 38px;
 }
 
-/* 窗口控制按钮 */
+/* Window control buttons */
 .window-btn {
   border: none !important;
   background: transparent !important;
@@ -81,7 +81,7 @@
   color: #fff !important;
 }
 
-/* ==================== 日志页面样式 ==================== */
+/* ==================== Log Page Styles ==================== */
 
 .log-terminal {
   padding: 24;
@@ -129,7 +129,7 @@
   color: #4ade80;
 }
 
-/* ==================== Sider/Navigation 样式 ==================== */
+/* ==================== Sider/Navigation Styles ==================== */
 
 .app-sider {
   background: #fff !important;

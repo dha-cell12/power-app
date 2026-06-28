@@ -4,7 +4,7 @@ const fs = require('fs');
 
 require('dotenv').config();
 
-// 获取应用路径 - 同时检查 mac 和 mac-arm64 目录
+// Get application path - check both mac and mac-arm64 directories
 let appPath;
 const macPath = path.join(__dirname, '../dist/mac/Chrome Power.app');
 const macArm64Path = path.join(__dirname, '../dist/mac-arm64/Chrome Power.app');
@@ -16,7 +16,7 @@ if (fs.existsSync(macArm64Path)) {
   appPath = macPath;
   console.log('Using regular mac app path:', appPath);
 } else {
-  console.error('应用路径不存在，请先构建应用');
+  console.error('App path does not exist, please build the app first');
   process.exit(1);
 }
 
@@ -25,7 +25,7 @@ const entitlements = path.join(__dirname, '../buildResources/entitlements.mac.pl
 
 console.log('Signing native modules...');
 
-// 找到所有 .node 文件并单独签名
+// Find all .node files and sign them individually
 function signNativeModules(directory) {
   try {
     const files = fs.readdirSync(directory, { withFileTypes: true });
@@ -47,54 +47,54 @@ function signNativeModules(directory) {
   }
 }
 
-// 签名所有原生模块
+// Sign all native modules
 const unpackedPath = path.join(appPath, 'Contents/Resources/app.asar.unpacked');
 if (fs.existsSync(unpackedPath)) {
   signNativeModules(unpackedPath);
 } else {
-  console.error('app.asar.unpacked 目录不存在:', unpackedPath);
+  console.error('app.asar.unpacked directory does not exist:', unpackedPath);
 }
 
-// 最后重新签名整个应用
+// Re-sign the entire application
 console.log('Re-signing entire application...');
 execSync(`codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${appPath}"`, { stdio: 'inherit' });
 
-// 设置执行权限
-console.log('设置执行权限...');
+// Set execution permissions
+console.log('Setting execution permissions...');
 execSync(`chmod -R +x "${appPath}"`, { stdio: 'inherit' });
-console.log(`特别设置主程序权限: ${appPath}/Contents/MacOS/Chrome Power`);
+console.log(`Specifically setting main program permissions: ${appPath}/Contents/MacOS/Chrome Power`);
 execSync(`chmod +x "${appPath}/Contents/MacOS/Chrome Power"`, { stdio: 'inherit' });
 
-// 移除隔离属性
-console.log('移除隔离属性...');
+// Remove quarantine attribute
+console.log('Removing quarantine attribute...');
 execSync(`xattr -dr com.apple.quarantine "${appPath}" || true`, { stdio: 'inherit' });
 
-console.log('验证签名...');
+console.log('Verifying signature...');
 execSync(`codesign --verify --deep --strict --verbose=2 "${appPath}"`, { stdio: 'inherit' });
 
-// 签名所有二进制文件和框架
+// Sign all binaries and frameworks
 console.log('Signing all binaries and frameworks...');
 const exePath = path.join(appPath, 'Contents/MacOS/Chrome Power');
 const helperPath = path.join(appPath, 'Contents/Frameworks/Chrome Power Helper.app');
 const helperEXEPath = path.join(appPath, 'Contents/Frameworks/Chrome Power Helper.app/Contents/MacOS/Chrome Power Helper');
 
-// 签名 Electron Helper
+// Sign Electron Helper
 if (fs.existsSync(helperPath)) {
   console.log(`Signing Electron Helper: ${helperPath}`);
   execSync(`codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${helperPath}"`, { stdio: 'inherit' });
-  
-  // 确保 Helper 有执行权限
+
+  // Ensure Helper has execution permissions
   if (fs.existsSync(helperEXEPath)) {
     console.log(`Setting permissions for Helper: ${helperEXEPath}`);
     execSync(`chmod +x "${helperEXEPath}"`, { stdio: 'inherit' });
   }
 }
 
-// 确保主程序有执行权限
+// Ensure main program has execution permissions
 console.log(`Setting permissions for main executable: ${exePath}`);
 execSync(`chmod +x "${exePath}"`, { stdio: 'inherit' });
 
-// 签名其他框架
+// Sign other frameworks
 const frameworksPath = path.join(appPath, 'Contents/Frameworks');
 if (fs.existsSync(frameworksPath)) {
   const frameworks = fs.readdirSync(frameworksPath);

@@ -86,17 +86,17 @@ const Extensions = () => {
 
   const onChange = (list: number[]) => {
     const currentIds = windows.map(w => w.id!);
-    // 保留不在当前视图的选中项
+    // Retain selected items not in the current view
     setSelectedWindows(prev => [...prev.filter(id => !currentIds.includes(id)), ...list]);
   };
 
   const onCheckAllChange: CheckboxProps['onChange'] = e => {
     const currentIds = windows.map(w => w.id!);
     if (e.target.checked) {
-      // 当全选时，保留不在当前视图的选中项，并添加当前视图的所有项
+      // When "Select All" is checked, retain selected items not in the current view and add all items in the current view
       setSelectedWindows(prev => [...prev.filter(id => !currentIds.includes(id)), ...currentIds]);
     } else {
-      // 当取消全选时，只移除当前视图的选中项
+      // When "Select All" is unchecked, only remove selected items from the current view
       setSelectedWindows(prev => prev.filter(id => !currentIds.includes(id)));
     }
   };
@@ -146,7 +146,7 @@ const Extensions = () => {
       const data = await ExtensionBridge.getAll();
       setExtensions(data);
     } catch (error) {
-      messageApi.error('获取扩展列表失败');
+      messageApi.error('Failed to fetch extension list');
     }
     setLoading(false);
   };
@@ -161,35 +161,35 @@ const Extensions = () => {
 
     try {
       await ExtensionBridge.syncWindowExtensions(selectedExtension.id!, selectedWindows);
-      messageApi.success('应用成功');
+      messageApi.success('Apply successfully');
     } catch (error) {
-      messageApi.error('应用失败');
+      messageApi.error('Apply failed');
     }
     setApplyModalVisible(false);
   };
 
   const handleUploadExtension = async (extension: DB.Extension) => {
     if (!extension.path) {
-      messageApi.error('请上传扩展安装包');
+      messageApi.error('Please upload extension installation package');
       return;
     }
     if (selectedExtension) {
       try {
         await ExtensionBridge.updateExtension(selectedExtension.id!, extension);
-        messageApi.success('更新成功');
+        messageApi.success('Update successfully');
         handleModalClose();
         fetchExtensions();
       } catch (error) {
-        messageApi.error('更新失败');
+        messageApi.error('Update failed');
       }
     } else {
       try {
         await ExtensionBridge.createExtension(extension);
-        messageApi.success('上传成功');
+        messageApi.success('Upload successfully');
         handleModalClose();
         fetchExtensions();
       } catch (error) {
-        messageApi.error('上传失败');
+        messageApi.error('Upload failed');
       }
     }
   };
@@ -210,7 +210,7 @@ const Extensions = () => {
     if (value > -1) {
       const filteredWindows = [...windowDataCopy].filter(f => f.group_id === value);
       setWindows(filteredWindows);
-      // 保持已选中但不在当前视图的窗口ID
+      // Retain selected window IDs that are not in the current view
       setSelectedWindows(prev => {
         const filteredIds = filteredWindows.map(w => w.id!);
         return [
@@ -237,7 +237,7 @@ const Extensions = () => {
           containsKeyword(f.id, keyword),
       );
       setWindows(filteredWindows);
-      // 保持已选中但不在当前视图的窗口ID
+      // Retain selected window IDs that are not in the current view
       setSelectedWindows(prev => {
         const filteredIds = filteredWindows.map(w => w.id!);
         return [
@@ -293,10 +293,10 @@ const Extensions = () => {
             onSuccess?.(file);
           } else {
             onError?.(new Error(result.error));
-            messageApi.error('上传失败: ' + result.error);
+            messageApi.error('Upload failed: ' + result.error);
           }
         } catch (error) {
-          messageApi.error('上传失败');
+          messageApi.error('Upload failed');
         }
         setUploading(false);
       },

@@ -32,12 +32,12 @@ export const arrangeWindows = async () => {
   
 // };
 
-// 创建一个函数，用于接收来自原生插件的消息
+// Create a function to receive messages from native plugin
 // function controlActionCallback(action: SafeAny) {
 //   console.log('controlActionCallback', action);
-//   // 处理 action，比如发送到渲染进程
+//   // Process action, for example send to renderer process
 //   ipcRenderer.send('control-action', action);
 // }
 
-// 将函数传递给原生插件
+// Pass the function to the native plugin
 // (windowAddon as unknown as SafeAny)!.setControlActionCallback(controlActionCallback);

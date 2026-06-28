@@ -11,18 +11,18 @@ export async function createBrowser(wsEndpoint) {
   return browser;
 }
 
-// 辅助函数：随机等待时间
+// Helper function: Random wait time
 async function randomWait(min, max) {
   const waitTime = Math.floor(Math.random() * (max - min + 1) + min);
   await new Promise(resolve => setTimeout(resolve, waitTime));
 }
 
-// 主要的自动化脚本函数
+// Main automation script function
 export async function autoScript(browser) {
   try {
-    
+
   } catch (error) {
-    console.error('自动化脚本执行出错:', error);
+    console.error('Error executing automation script:', error);
   }
 }
 

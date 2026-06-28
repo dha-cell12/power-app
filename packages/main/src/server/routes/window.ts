@@ -25,7 +25,7 @@ router.get('/info', async (req, res) => {
     }
     ipInfo = await getProxyInfo(proxyData);
 
-    // 计算用户目录绝对路径
+    // Calculate absolute path of user directory
     if (windowData.profile_id) {
       const settings = getSettings();
       const cachePath = settings.profileCachePath;

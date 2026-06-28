@@ -23,13 +23,13 @@ const logger = createLogger(PROXY_LOGGER_LABEL);
 export async function createShortcutWithIcon(exePath: string, args: string[], iconPath: string, shortcutPath: string) {
   try {
     const shortcutDir = path.dirname(shortcutPath);
-    
-    // 确保目录存在
+
+    // Ensure directory exists
     if (!fs.existsSync(shortcutDir)) {
       fs.mkdirSync(shortcutDir, { recursive: true });
     }
-    
-    // PowerShell 脚本创建快捷方式
+
+    // PowerShell script to create shortcut
     const escapedArgs = args.map(arg => arg.replace(/"/g, '`"')).join(' ');
     const psScript = `
       $WshShell = New-Object -ComObject WScript.Shell
@@ -38,43 +38,43 @@ export async function createShortcutWithIcon(exePath: string, args: string[], ic
       $Shortcut.Arguments = "${escapedArgs}"
       $Shortcut.IconLocation = "${iconPath.replace(/\\/g, '\\\\')}"
       $Shortcut.WorkingDirectory = "${path.dirname(exePath).replace(/\\/g, '\\\\')}"
-      
-      # 添加这行来设置快捷方式为管理员权限运行
+
+      # Add this line to set the shortcut to run with administrator privileges
       $bytes = [System.IO.File]::ReadAllBytes("${shortcutPath.replace(/\\/g, '\\\\')}")
-      $bytes[0x15] = $bytes[0x15] -bor 0x20 # 设置管理员权限标志
+      $bytes[0x15] = $bytes[0x15] -bor 0x20 # Set administrator privilege flag
       [System.IO.File]::WriteAllBytes("${shortcutPath.replace(/\\/g, '\\\\')}", $bytes)
-      
+
       $Shortcut.Save()
-      
-      # 验证文件是否创建成功
+
+      # Verify if the file was created successfully
       if (Test-Path "${shortcutPath.replace(/\\/g, '\\\\')}") {
-        Write-Output "快捷方式创建成功"
+        Write-Output "Shortcut created successfully"
       } else {
-        Write-Error "快捷方式创建失败"
+        Write-Error "Failed to create shortcut"
         exit 1
       }
     `;
     console.log(psScript);
-    // 将脚本写入临时文件以避免命令行长度限制
+    // Write script to temporary file to avoid command line length limits
     const tempScriptPath = path.join(os.tmpdir(), `create_shortcut_${Date.now()}.ps1`);
     fs.writeFileSync(tempScriptPath, psScript);
     
     return new Promise((resolve, reject) => {
       exec(`powershell -ExecutionPolicy Bypass -File "${tempScriptPath}"`, (error, stdout, stderr) => {
-        // 清理临时脚本文件
-        try { fs.unlinkSync(tempScriptPath); } catch (e) { /* 忽略删除失败 */ }
-        
+        // Clean up temporary script file
+        try { fs.unlinkSync(tempScriptPath); } catch (e) { /* Ignore deletion failure */ }
+
         if (error) {
-          logger.error(`创建快捷方式失败: ${stderr}`);
+          logger.error(`Failed to create shortcut: ${stderr}`);
           reject(error);
         } else {
-          logger.info(`创建快捷方式成功: ${shortcutPath}`);
+          logger.info(`Shortcut created successfully: ${shortcutPath}`);
           resolve(shortcutPath);
         }
       });
     });
   } catch (error) {
-    logger.error(`创建快捷方式异常: ${error}`);
+    logger.error(`Exception creating shortcut: ${error}`);
     throw error;
   }
 }
@@ -130,7 +130,7 @@ const getRealIP = async (proxy: DB.Proxy) => {
   } catch (error) {
     bridgeMessageToUI({
       type: 'error',
-      text: `获取真实IP失败: ${(error as {message: string}).message}`,
+      text: `Failed to get real IP: ${(error as {message: string}).message}`,
     });
     logger.error(`| Prepare | getRealIP | error: ${(error as {message: string}).message}`);
     return '';

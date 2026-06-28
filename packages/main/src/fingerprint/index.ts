@@ -1,4 +1,4 @@
-﻿import {join} from 'path';
+import {join} from 'path';
 import {ProxyDB} from '../db/proxy';
 import {WindowDB} from '../db/window';
 // import {getChromePath} from './device';
@@ -92,17 +92,17 @@ const HOST = '127.0.0.1';
 const getDriverPath = (windowData?: DB.Window) => {
   const settings = getSettings();
 
-  // 如果窗口填写了本地Chrome路径，自动使用
+  // If local Chrome path is specified for the window, use it automatically
   if (windowData?.localChromePath) {
     return windowData.localChromePath;
   }
-  
-  // 如果窗口填写了chromium路径
+
+  // If Chromium path is specified for the window
   if (windowData?.chromiumBinPath) {
     return windowData.chromiumBinPath;
   }
 
-  // 否则使用全局设置
+  // Otherwise use global settings
   if (settings.useLocalChrome) {
     return settings.localChromePath;
   } else {
@@ -114,7 +114,7 @@ const getAvailablePort = async () => {
   for (let attempts = 0; attempts < 10; attempts++) {
     try {
       const port = await portscanner.findAPortNotInUse(9222, 40222);
-      return port; // 成功绑定后返回
+      return port; // Return after successful binding
     } catch (error) {
       console.log('Port already in use, retrying...');
     }
@@ -127,7 +127,7 @@ const waitForChromeReady = async (chromePort: number, id: number, maxAttempts = 
 
   while (attempts < maxAttempts) {
     try {
-      // 尝试连接 CDP
+      // Try to connect to CDP
       const response = await api.get(`http://${HOST}:${chromePort}/json/version`, {
         timeout: 1000,
       });
@@ -135,8 +135,8 @@ const waitForChromeReady = async (chromePort: number, id: number, maxAttempts = 
         return true;
       }
     } catch (error) {
-      logger.error('连接失败', (error as Error).message);
-      // 连接失败，继续等待
+      logger.error('Connection failed', (error as Error).message);
+      // Connection failed, continue waiting
     }
 
     attempts++;
@@ -150,18 +150,18 @@ export async function openFingerprintWindow(id: number, headless = false) {
   const release = await mutex.acquire();
   try {
     const windowData = await WindowDB.getById(id);
-    
-    // 检查窗口是否已经打开
+
+    // Check if the window is already open
     if (windowData.status === 2 && windowData.port) {
       logger.info(`Window ${id} is already running on port ${windowData.port}`);
       try {
         const browserURL = `http://${HOST}:${windowData.port}`;
         const {data} = await api.get(browserURL + '/json/version');
-        
-        // 如果能成功获取到浏览器信息，说明窗口仍然可用
+
+        // If browser information is successfully retrieved, the window is still available
         if (data) {
           logger.info(`Window ${id} is already running on port ${windowData.port}`);
-          // 获取浏览器实例，把窗口放到最前面
+          // Get the browser instance and bring the window to the front
           const browser = await puppeteer.connect({
             browserWSEndpoint: data.webSocketDebuggerUrl,
             defaultViewport: null,
@@ -169,7 +169,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
           const pages = await browser.pages();
           if (pages.length > 0) {
             await pages[0].bringToFront();
-            // 取消连接
+            // Disconnect
             await browser.disconnect();
           }
           return {
@@ -177,7 +177,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
           };
         }
       } catch (error) {
-        // 如果获取失败，说明窗口虽然标记为打开但实际已关闭
+        // If retrieval fails, the window is actually closed despite being marked as open
         logger.warn(`Window ${id} marked as running but not accessible, will reopen`);
         await WindowDB.update(id, {
           ...windowData,
@@ -196,8 +196,8 @@ export async function openFingerprintWindow(id: number, headless = false) {
     const cachePath = settings.profileCachePath;
 
     const win = BrowserWindow.getAllWindows()[0];
-    // 优先使用窗口级别的 Chrome 设置，否则使用全局设置
-    // 如果窗口填写了 localChromePath，使用本地 Chrome 模式
+    // Prioritize window-level Chrome settings, otherwise use global settings
+    // If localChromePath is specified, use local Chrome mode
     const useLocalChrome = windowData?.localChromePath ? true : (windowData.useLocalChrome ?? settings.useLocalChrome);
     const windowDataDir = join(
       cachePath,
@@ -206,7 +206,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
     );
     logger.info(`Opening window with profile_id: ${windowData.profile_id}, userDataDir: ${windowDataDir}`);
 
-    // 确保目录存在并设置正确权限
+    // Ensure directory exists and set correct permissions
     if (!existsSync(windowDataDir)) {
       try {
         mkdirSync(windowDataDir, {recursive: true, mode: 0o755});
@@ -216,7 +216,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
       }
     }
 
-    // 确保目录有正确的权限
+    // Ensure directory has correct permissions
     const isMac = process.platform === 'darwin';
     if (isMac) {
       try {
@@ -269,7 +269,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
             '--no-first-run',
           ]
         : [
-            // Mac 特定参数
+            // Mac specific parameters
             ...(isMac ? ['--args'] : []),
 
             // `--extended-parameters=${btoa(JSON.stringify(fingerprint))}`,
@@ -283,7 +283,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
             // `--user-agent=${fingerprint?.ua}`,
             '--unhandled-rejections=strict',
 
-            // Mac 特定安全参数
+            // Mac specific security parameters
             ...(isMac ? ['--no-sandbox', '--disable-setuid-sandbox'] : []),
           ];
 
@@ -298,15 +298,15 @@ export async function openFingerprintWindow(id: number, headless = false) {
         launchParamter.push(`--load-extension=${extensionData.map(e => e.path).join(',')}`);
       }
       if (headless) {
-        launchParamter.push('--headless=new'); // 使用新版 headless 模式
+        launchParamter.push('--headless=new'); // Use the new headless mode
         if (!isMac) {
-          launchParamter.push('--disable-gpu'); // 在 Mac 上不需要这个参数
+          launchParamter.push('--disable-gpu'); // This parameter is not needed on Mac
         }
       } else {
         launchParamter.push('--new-window');
       }
 
-      // 添加用户自定义启动参数
+      // Add user-defined launch parameters
       if (settings.chromeLaunchArgs) {
         const customArgs = settings.chromeLaunchArgs
           .split('\n')
@@ -316,7 +316,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
         logger.info(`Added ${customArgs.length} custom launch args`);
       }
 
-      // 添加调试参数（如果需要）
+      // Add debug parameters (if needed)
       if (process.env.NODE_ENV === 'development') {
         // launchParamter.push(
         //   '--enable-logging',
@@ -358,7 +358,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
         // const str = _chunk.toString();
         // console.error('stderr: ', str);
       });
-      // 这个地方需要监听 stderr，否则在某些网站会出现卡死的情况
+      // Need to listen to stderr here, otherwise it might hang on some websites
       chromeInstance.stderr.on('data', _chunk => {
         // const str = _chunk.toString();
         // console.error('stderr: ', str);
@@ -406,21 +406,21 @@ export async function openFingerprintWindow(id: number, headless = false) {
       } catch (error) {
         logger.error('open window failed', error);
 
-        // 检查进程是否存在并终止
+        // Check if process exists and terminate it
         if (chromeInstance.pid) {
           try {
             if (process.platform === 'win32') {
               try {
-                // 使用 chcp 65001 设置控制台代码页为 UTF-8
+                // Use chcp 65001 to set console code page to UTF-8
                 execSync('chcp 65001', {stdio: 'ignore'});
 
-                // 检查进程是否存在
+                // Check if process exists
                 execSync(`tasklist /FI "PID eq ${chromeInstance.pid}" /NH /FO CSV`, {
                   encoding: 'utf8',
                   stdio: ['ignore', 'pipe', 'ignore'],
                 });
 
-                // 进程存在，终止它
+                // Process exists, terminate it
                 execSync(`taskkill /PID ${chromeInstance.pid} /F /T`, {
                   encoding: 'utf8',
                   stdio: ['ignore', 'pipe', 'ignore'],
@@ -435,7 +435,7 @@ export async function openFingerprintWindow(id: number, headless = false) {
                 }
               }
             } else {
-              // Unix系统的处理保持不变
+              // Unix system handling remains unchanged
               try {
                 process.kill(chromeInstance.pid, 0);
                 execSync(`kill -9 ${chromeInstance.pid}`);
@@ -496,7 +496,7 @@ async function createSocksProxy(proxyData: DB.Proxy) {
     socksPassword,
   });
 
-  // 添加更多错误处理
+  // Add more error handling
   proxyServer.on('error', err => {
     logger.error('Socks server error:', err);
   });
@@ -509,7 +509,7 @@ async function createSocksProxy(proxyData: DB.Proxy) {
     logger.error('Socks request error:', err);
   });
 
-  // 添加连接关闭处理
+  // Add connection close handling
   proxyServer.on('close', () => {
     logger.info('Socks server closed');
   });
@@ -550,7 +550,7 @@ export async function closeFingerprintWindow(id: number, force = false) {
 }
 
 /**
- * 将指定窗口聚焦并置顶到最前面
+ * Focus the specified window and bring it to the front
  */
 export async function focusFingerprintWindow(id: number) {
   const windowData = await WindowDB.getById(id);
@@ -572,18 +572,18 @@ export async function focusFingerprintWindow(id: number) {
       const pages = await browser.pages();
       if (pages.length > 0) {
         const page = pages[0];
-        
-        // 先使用 bringToFront 基本置顶
+
+        // First use bringToFront for basic topping
         await page.bringToFront();
-        
-        // 尝试使用 CDP 最小化再恢复（更强制置顶）
+
+        // Try using CDP to minimize then restore (more forced topping)
         try {
           const client = await page.createCDPSession();
           const { windowId } = await client.send('Browser.getWindowForTarget', {
             targetId: (page.target() as any)._targetId,
           });
-          
-          // 先最小化再恢复
+
+          // Minimize then restore
           await client.send('Browser.setWindowBounds', {
             windowId,
             bounds: { windowState: 'minimized' },
@@ -593,10 +593,10 @@ export async function focusFingerprintWindow(id: number) {
             windowId,
             bounds: { windowState: 'normal' },
           });
-          
+
           await client.detach();
         } catch (cdpError) {
-          // CDP 失败不影响，继续使用 bringToFront
+          // CDP failure does not affect, continue using bringToFront
           logger.warn(`CDP focus failed, using basic bringToFront: ${cdpError}`);
         }
         

@@ -59,7 +59,7 @@ export default function Header() {
           },
         },
         {
-          label: '简体中文',
+          label: 'Simplified Chinese',
           key: 'zh-cn',
           onClick: () => {
             i18n.changeLanguage('zh');

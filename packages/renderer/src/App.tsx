@@ -23,7 +23,7 @@ const App = () => {
   const [messageApi, contextHolder] = message.useMessage(MESSAGE_CONFIG);
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 100); // 延迟显示组件
+    setTimeout(() => setIsVisible(true), 100); // Delay displaying the component
   }, []);
 
   const location = useLocation();

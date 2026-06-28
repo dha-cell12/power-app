@@ -1,4 +1,4 @@
-// 导入需要的模块
+// Import necessary modules
 const fs = require('fs');
 const path = require('path');
 const UserAgent = require('user-agents');

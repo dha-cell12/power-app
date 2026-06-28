@@ -22,19 +22,30 @@ vi.mock('electron', () => {
   bw.prototype.focus = vi.fn();
   bw.prototype.restore = vi.fn();
 
-  const app: Pick<Electron.App, 'getAppPath'> = {
+  const app: Pick<Electron.App, 'getAppPath' | 'getPath'> = {
     getAppPath(): string {
+      return '';
+    },
+    getPath(name: string): string {
       return '';
     },
   };
 
-  // 模拟 ipcMain
+  // Mock ipcMain
   const ipcMain = {
     handle: vi.fn(),
-    // 根据需要模拟其他 ipcMain 方法
+    // Mock other ipcMain methods as needed
   };
 
-  return {BrowserWindow: bw, app, ipcMain};
+  const nativeImage = {
+    createFromPath: vi.fn(),
+  };
+
+  const shell = {
+    openExternal: vi.fn(),
+  };
+
+  return {BrowserWindow: bw, app, ipcMain, nativeImage, shell};
 });
 
 beforeEach(() => {
