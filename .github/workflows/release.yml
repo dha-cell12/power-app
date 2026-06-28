@@ -232,7 +232,18 @@ jobs:
           BUILD_TIME: ${{ github.run_number }}
           APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
           ELECTRON_ARCH: arm64
-      
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build-${{ github.run_number }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.blockmap
+          retention-days: 7
+
       # # macOS特定：签名原生模块（如果需要）
       # - name: Sign native modules (macOS)
       #   if: startsWith(matrix.platform, 'mac') && !inputs.dry-run
