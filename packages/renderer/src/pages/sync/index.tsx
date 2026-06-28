@@ -158,20 +158,29 @@ const Sync = () => {
           render: (_: SafeAny, record: DB.Window): React.ReactNode => {
             if (syncStatus.isActive && syncStatus.slavePids.includes(record.pid!)) {
               return (
-                <Tag color="processing" icon={<SyncOutlined spin />}>
+                <Tag
+                  color="processing"
+                  icon={<SyncOutlined spin />}
+                >
                   {t('sync_status_syncing')}
                 </Tag>
               );
             }
             if (record.id === syncConfig.masterWindowId) {
               return (
-                <Tag color="blue" icon={<CrownOutlined />}>
+                <Tag
+                  color="blue"
+                  icon={<CrownOutlined />}
+                >
                   {t('sync_status_master')}
                 </Tag>
               );
             }
             return (
-              <Tag color="default" icon={<DesktopOutlined />}>
+              <Tag
+                color="default"
+                icon={<DesktopOutlined />}
+              >
                 {t('sync_status_ready')}
               </Tag>
             );
@@ -396,8 +405,8 @@ const Sync = () => {
     SyncBridge.cascadeWindows({
       pids,
       offset: cascadeOffset,
-      size: { width: cascadeWidth, height: cascadeHeight },
-      startOffset: { x: -8, y: 0 }, // 补偿窗口边框
+      size: {width: cascadeWidth, height: cascadeHeight},
+      startOffset: {x: -8, y: 0}, // Compensate for window border
     });
     saveSyncConfig();
     message.success(t('sync_msg_arranged'));
@@ -443,7 +452,11 @@ const Sync = () => {
   return (
     <div className="page-container">
       {/* Toolbar */}
-      <Flex align="center" justify="space-between" className="page-toolbar">
+      <Flex
+        align="center"
+        justify="space-between"
+        className="page-toolbar"
+      >
         <Space size={16}>
           {!isMacOS ? (
             <>
@@ -461,7 +474,11 @@ const Sync = () => {
                   {t('sync_start')} (Ctrl+Alt+S)
                 </Button>
               ) : (
-                <Button danger icon={<StopOutlined />} onClick={handleStopSync}>
+                <Button
+                  danger
+                  icon={<StopOutlined />}
+                  onClick={handleStopSync}
+                >
                   {t('sync_stop')} (Ctrl+Alt+D)
                 </Button>
               )}
@@ -471,16 +488,35 @@ const Sync = () => {
           )}
         </Space>
         <Space>
-          <Button icon={<ReloadOutlined />} onClick={fetchOpenedWindows}>{t('refresh')}</Button>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={fetchOpenedWindows}
+          >
+            {t('refresh')}
+          </Button>
         </Space>
       </Flex>
 
       {/* Main Content */}
-      <div style={{ display: 'flex', flex: 1, gap: 16, overflow: 'hidden', alignItems: 'stretch' }}>
+      <div style={{display: 'flex', flex: 1, gap: 16, overflow: 'hidden', alignItems: 'stretch'}}>
         {/* Left: Window List */}
-        <Card variant="borderless" style={{ flex: 2 }} className="page-card">
-          <Flex align="center" gap={16} style={{ marginBottom: 16 }}>
-            <Title level={5} style={{margin: 0}}><DesktopOutlined style={{marginRight: 8}} />{t('sync_opened_windows')}</Title>
+        <Card
+          variant="borderless"
+          style={{flex: 2}}
+          className="page-card"
+        >
+          <Flex
+            align="center"
+            gap={16}
+            style={{marginBottom: 16}}
+          >
+            <Title
+              level={5}
+              style={{margin: 0}}
+            >
+              <DesktopOutlined style={{marginRight: 8}} />
+              {t('sync_opened_windows')}
+            </Title>
             {!isMacOS && masterWindow && <Text type="secondary">{masterInfoText}</Text>}
           </Flex>
           <Table
@@ -490,7 +526,7 @@ const Sync = () => {
             scroll={{y: 'auto'}}
             columns={columns}
             pagination={false}
-            onRow={(record) => ({
+            onRow={record => ({
               onDoubleClick: async () => {
                 if (record.id) {
                   await WindowBridge.focus(record.id);
@@ -501,10 +537,28 @@ const Sync = () => {
         </Card>
 
         {/* Right: Control Panel */}
-        <Card variant="borderless" style={{ flex: 1, overflow: 'hidden' }} title={<Space><SettingOutlined /><span>{t('sync_control_panel')}</span></Space>}>
-          <Space direction="vertical" style={{width: '100%'}} size="middle">
+        <Card
+          variant="borderless"
+          style={{flex: 1, overflow: 'hidden'}}
+          title={
+            <Space>
+              <SettingOutlined />
+              <span>{t('sync_control_panel')}</span>
+            </Space>
+          }
+        >
+          <Space
+            direction="vertical"
+            style={{width: '100%'}}
+            size="middle"
+          >
             <div>
-              <Text strong style={{marginBottom: 8, display: 'block'}}>{t('sync_display')}</Text>
+              <Text
+                strong
+                style={{marginBottom: 8, display: 'block'}}
+              >
+                {t('sync_display')}
+              </Text>
               <Select
                 style={{width: '100%'}}
                 value={selectedMonitorIndex}
@@ -519,51 +573,129 @@ const Sync = () => {
 
             <Divider style={{margin: '8px 0'}} />
 
-            <Form form={arrangeForm} layout="vertical" initialValues={{ columns: syncConfig.columns, spacing: syncConfig.spacing, height: syncConfig.size.height !== 0 ? syncConfig.size.height : undefined }} onValuesChange={onArrangeValuesChange}>
+            <Form
+              form={arrangeForm}
+              layout="vertical"
+              initialValues={{
+                columns: syncConfig.columns,
+                spacing: syncConfig.spacing,
+                height: syncConfig.size.height !== 0 ? syncConfig.size.height : undefined,
+              }}
+              onValuesChange={onArrangeValuesChange}
+            >
               <Row gutter={8}>
                 <Col span={12}>
-                  <Form.Item label={t('arrange_columns')} name="columns"><InputNumber min={1} max={12} style={{width: '100%'}} /></Form.Item>
+                  <Form.Item
+                    label={t('arrange_columns')}
+                    name="columns"
+                  >
+                    <InputNumber
+                      min={1}
+                      max={12}
+                      style={{width: '100%'}}
+                    />
+                  </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label={t('arrange_spacing')} name="spacing"><InputNumber min={0} max={50} style={{width: '100%'}} /></Form.Item>
+                  <Form.Item
+                    label={t('arrange_spacing')}
+                    name="spacing"
+                  >
+                    <InputNumber
+                      min={0}
+                      max={50}
+                      style={{width: '100%'}}
+                    />
+                  </Form.Item>
                 </Col>
               </Row>
-              <Form.Item label={t('arrange_height')} name="height"><InputNumber min={0} style={{width: '100%'}} /></Form.Item>
+              <Form.Item
+                label={t('arrange_height')}
+                name="height"
+              >
+                <InputNumber
+                  min={0}
+                  style={{width: '100%'}}
+                />
+              </Form.Item>
             </Form>
 
-            <Button block type="primary" icon={<WindowsOutlined />} onClick={handleArrangeWindows} disabled={selectedRowKeys.length === 0}>
+            <Button
+              block
+              type="primary"
+              icon={<WindowsOutlined />}
+              onClick={handleArrangeWindows}
+              disabled={selectedRowKeys.length === 0}
+            >
               {t('sync_arrange_button')}
             </Button>
 
             <Divider style={{margin: '8px 0'}} />
 
-            <Text strong style={{marginBottom: 8, display: 'block'}}>{t('sync_cascade_settings')}</Text>
-            <Form form={arrangeForm} layout="vertical" initialValues={{
-              columns: syncConfig.columns,
-              spacing: syncConfig.spacing,
-              height: syncConfig.size.height !== 0 ? syncConfig.size.height : undefined,
-              cascadeSpacing: syncConfig.cascadeSpacing,
-              cascadeWidth: syncConfig.cascadeSize.width,
-              cascadeHeight: syncConfig.cascadeSize.height,
-            }} onValuesChange={onArrangeValuesChange}>
+            <Text
+              strong
+              style={{marginBottom: 8, display: 'block'}}
+            >
+              {t('sync_cascade_settings')}
+            </Text>
+            <Form
+              form={arrangeForm}
+              layout="vertical"
+              initialValues={{
+                columns: syncConfig.columns,
+                spacing: syncConfig.spacing,
+                height: syncConfig.size.height !== 0 ? syncConfig.size.height : undefined,
+                cascadeSpacing: syncConfig.cascadeSpacing,
+                cascadeWidth: syncConfig.cascadeSize.width,
+                cascadeHeight: syncConfig.cascadeSize.height,
+              }}
+              onValuesChange={onArrangeValuesChange}
+            >
               <Row gutter={8}>
                 <Col span={12}>
-                  <Form.Item label={t('sync_cascade_width')} name="cascadeWidth">
-                    <InputNumber min={200} max={2000} style={{width: '100%'}} />
+                  <Form.Item
+                    label={t('sync_cascade_width')}
+                    name="cascadeWidth"
+                  >
+                    <InputNumber
+                      min={200}
+                      max={2000}
+                      style={{width: '100%'}}
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label={t('sync_cascade_height')} name="cascadeHeight">
-                    <InputNumber min={200} max={2000} style={{width: '100%'}} />
+                  <Form.Item
+                    label={t('sync_cascade_height')}
+                    name="cascadeHeight"
+                  >
+                    <InputNumber
+                      min={200}
+                      max={2000}
+                      style={{width: '100%'}}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
-              <Form.Item label={t('sync_cascade_spacing')} name="cascadeSpacing">
-                <InputNumber min={0} max={100} style={{width: '100%'}} />
+              <Form.Item
+                label={t('sync_cascade_spacing')}
+                name="cascadeSpacing"
+              >
+                <InputNumber
+                  min={0}
+                  max={100}
+                  style={{width: '100%'}}
+                />
               </Form.Item>
             </Form>
 
-            <Button block type="default" icon={<DesktopOutlined />} onClick={handleCascadeWindows} disabled={selectedRowKeys.length === 0}>
+            <Button
+              block
+              type="default"
+              icon={<DesktopOutlined />}
+              onClick={handleCascadeWindows}
+              disabled={selectedRowKeys.length === 0}
+            >
               {t('sync_cascade_button')}
             </Button>
           </Space>

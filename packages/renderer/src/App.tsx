@@ -1,19 +1,19 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 import Navigation from './components/navigation';
 
 import dayjs from 'dayjs';
 
 import './index.css';
 import './styles/antd.css';
-import { Layout, message } from 'antd';
-import { useRoutes } from './routes';
+import {Layout, message} from 'antd';
+import {useRoutes} from './routes';
 import Header from './components/header';
-import { useEffect, useState } from 'react';
-import { CommonBridge } from '#preload';
-import { MESSAGE_CONFIG } from './constants';
-import type { BridgeMessage } from '../../shared/types/common';
+import {useEffect, useState} from 'react';
+import {CommonBridge} from '#preload';
+import {MESSAGE_CONFIG} from './constants';
+import type {BridgeMessage} from '../../shared/types/common';
 
-const { Content, Sider } = Layout;
+const {Content, Sider} = Layout;
 
 dayjs.locale('zh-cn');
 
@@ -23,7 +23,7 @@ const App = () => {
   const [messageApi, contextHolder] = message.useMessage(MESSAGE_CONFIG);
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 100); // 延迟显示组件
+    setTimeout(() => setIsVisible(true), 100); // Delay displaying the component
   }, []);
 
   const location = useLocation();
@@ -46,13 +46,16 @@ const App = () => {
   }, []);
 
   return (
-    <Layout style={{ height: '100%' }} className={`fade-in ${isVisible ? 'visible' : ''}`}>
+    <Layout
+      style={{height: '100%'}}
+      className={`fade-in ${isVisible ? 'visible' : ''}`}
+    >
       {contextHolder}
       {location.pathname !== '/start' && <Header></Header>}
-      <Layout style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
+      <Layout style={{flex: 1, display: 'flex', flexDirection: 'row'}}>
         {location.pathname !== '/start' && (
           <Sider
-            style={{ marginLeft: 10 }}
+            style={{marginLeft: 10}}
             width={164}
             className="sider"
           >
@@ -60,7 +63,10 @@ const App = () => {
           </Sider>
         )}
 
-        <Content className="content" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+        <Content
+          className="content"
+          style={{display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden'}}
+        >
           <Routes>
             {routes.map(route => {
               return (

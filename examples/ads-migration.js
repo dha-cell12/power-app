@@ -13,11 +13,11 @@ async function main() {
     for (const window of windows) {
       const fromDir = path.join(fromPath, window.profile_id + adsDirSuffix, 'Default');
       const toDir = path.join(toPath, window.profile_id, 'Default');
-      
-      // 确保目标目录存在
+
+      // Ensure target directory exists
       await fs.ensureDir(toDir);
-      
-      // 要复制的文件夹列表
+
+      // List of folders to copy
       const foldersToMove = [
         'Extension Rules',
         'Extension Scripts',
@@ -26,50 +26,45 @@ async function main() {
         'Local Storage',
         'IndexedDB',
       ];
-      
-      // 要复制的文件列表
-      const filesToMove = [
-        'Bookmarks',
-        'Bookmarks.bak',
-        'History',
-        'History-journal',
-      ];
-      
-      // 复制文件夹
+
+      // List of files to copy
+      const filesToMove = ['Bookmarks', 'Bookmarks.bak', 'History', 'History-journal'];
+
+      // Copy folders
       for (const folder of foldersToMove) {
         const source = path.join(fromDir, folder);
         const destination = path.join(toDir, folder);
-        
+
         if (await fs.pathExists(source)) {
-          console.log(`正在复制文件夹: ${folder} (${window.profile_id})`);
+          console.log(`Copying folder: ${folder} (${window.profile_id})`);
           if (await fs.pathExists(destination)) {
             await fs.remove(destination);
           }
           await fs.copy(source, destination);
         } else {
-          console.log(`源文件夹不存在: ${folder} (${window.profile_id})`);
+          console.log(`Source folder does not exist: ${folder} (${window.profile_id})`);
         }
       }
-      
-      // 复制文件
+
+      // Copy files
       for (const file of filesToMove) {
         const source = path.join(fromDir, file);
         const destination = path.join(toDir, file);
-        
+
         if (await fs.pathExists(source)) {
-          console.log(`正在复制文件: ${file} (${window.profile_id})`);
-          await fs.copy(source, destination, { overwrite: true });
+          console.log(`Copying file: ${file} (${window.profile_id})`);
+          await fs.copy(source, destination, {overwrite: true});
         } else {
-          console.log(`源文件不存在: ${file} (${window.profile_id})`);
+          console.log(`Source file does not exist: ${file} (${window.profile_id})`);
         }
       }
-      
-      console.log(`已完成 ${window.profile_id} 的数据迁移`);
+
+      console.log(`Completed data migration for ${window.profile_id}`);
     }
-    
-    console.log('所有配置文件迁移完成');
+
+    console.log('All configuration files migration completed');
   } catch (error) {
-    console.error('执行过程中出现错误:', error);
+    console.error('Error occurred during execution:', error);
   }
 }
 

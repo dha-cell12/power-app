@@ -10,7 +10,10 @@ interface AddableSelectOptions {
   options: DB.Group[] | DB.Tag[];
   value?: number | string[] | number[] | undefined | string;
   mode?: 'tags' | 'multiple' | undefined;
-  onChange?: (value: number | string[] | number[] | string, options: DB.Group | DB.Group[] | undefined) => void;
+  onChange?: (
+    value: number | string[] | number[] | string,
+    options: DB.Group | DB.Group[] | undefined,
+  ) => void;
   onClear?: () => void;
   onAddItem: (name: string) => Promise<boolean>;
   addBtnLabel?: string;

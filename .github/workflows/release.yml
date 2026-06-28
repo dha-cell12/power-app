@@ -135,7 +135,7 @@ jobs:
           ELECTRON_ARCH: ${{ matrix.arch }}
       # 安装Apple证书
       - name: Install Apple certificates
-        if: startsWith(matrix.platform, 'mac')
+        if: startsWith(matrix.platform, 'mac') && secrets.BUILD_CERTIFICATE_BASE64 != ''
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
@@ -179,6 +179,7 @@ jobs:
           shell: bash
           command: npx electron-builder --win --config .electron-builder.config.js --publish always
         env:
+          GYP_MSVS_VERSION: 2022
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           BUILD_TIME: ${{ github.run_number }}
 

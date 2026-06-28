@@ -1,11 +1,11 @@
-import { Button, Space, message, Flex } from 'antd';
-import type { OperationResult } from '../../../../../../shared/types/common';
-import { WindowBridge } from '#preload';
-import type { DB, SafeAny } from '../../../../../../shared/types/db';
-import { MESSAGE_CONFIG } from '/@/constants';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import {Button, Space, message, Flex} from 'antd';
+import type {OperationResult} from '../../../../../../shared/types/common';
+import {WindowBridge} from '#preload';
+import type {DB, SafeAny} from '../../../../../../shared/types/db';
+import {MESSAGE_CONFIG} from '/@/constants';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 
 const WindowDetailFooter = ({
   currentTab,
@@ -21,7 +21,7 @@ const WindowDetailFooter = ({
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage(MESSAGE_CONFIG);
   const [saving, setSaving] = useState(false);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
 
   const back = () => {
     history.back();
@@ -70,11 +70,29 @@ const WindowDetailFooter = ({
   return (
     <>
       {contextHolder}
-      <Flex justify="flex-start" gap={16} style={{ padding: '8px 8px 0 0' }}>
+      <Flex
+        justify="flex-start"
+        gap={16}
+        style={{padding: '8px 8px 0 0'}}
+      >
         {currentTab !== 'import' && (
-          <Button disabled={loading} loading={saving} type="primary" style={{ width: 80 }} onClick={handleOk}>{t('footer_ok')}</Button>
+          <Button
+            disabled={loading}
+            loading={saving}
+            type="primary"
+            style={{width: 80}}
+            onClick={handleOk}
+          >
+            {t('footer_ok')}
+          </Button>
         )}
-        <Button type="text" style={{ width: 80 }} onClick={() => history.back()}>{t('footer_cancel')}</Button>
+        <Button
+          type="text"
+          style={{width: 80}}
+          onClick={() => history.back()}
+        >
+          {t('footer_cancel')}
+        </Button>
       </Flex>
     </>
   );

@@ -9,7 +9,6 @@ import {getOrigin} from '../server';
 import axios from 'axios';
 import {writeFile} from 'fs/promises';
 
-
 const logger = createLogger(SERVICE_LOGGER_LABEL);
 
 export const initCommonService = () => {
@@ -26,7 +25,7 @@ export const initCommonService = () => {
     if (savePath) {
       copyFileSync(join(__dirname, '../..', filePath), savePath);
 
-      // 打开文件管理器并选择该文件
+      // Open file manager and select the file
       shell.showItemInFolder(savePath);
 
       return savePath;
@@ -35,7 +34,7 @@ export const initCommonService = () => {
     }
   });
 
-  // 添加 IPC 处理程序
+  // Add IPC handler
   ipcMain.handle('common-save-dialog', async (_, options) => {
     const win = BrowserWindow.getFocusedWindow();
     if (!win) return {canceled: true};

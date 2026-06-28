@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Card, Space, Badge, Descriptions, Tag, Typography } from 'antd';
+import {useEffect, useState} from 'react';
+import {useSearchParams} from 'react-router-dom';
+import {Card, Space, Badge, Descriptions, Tag, Typography} from 'antd';
 
-const { Title, Text } = Typography;
+const {Title, Text} = Typography;
 
 export default function Start() {
   const [search] = useSearchParams();
@@ -26,11 +26,11 @@ export default function Start() {
     timeZone: '',
   });
   const PIN_URL = [
-    { name: 'Google', n: 'GG' },
-    { name: 'Discord', n: 'DC' },
-    { name: 'Twitter', n: 'X' },
+    {name: 'Google', n: 'GG'},
+    {name: 'Discord', n: 'DC'},
+    {name: 'Twitter', n: 'X'},
   ];
-  const [pings, setPings] = useState<{ status: string }[]>([]);
+  const [pings, setPings] = useState<{status: string}[]>([]);
   const [checking, setChecking] = useState(false);
 
   const checkPing = async () => {
@@ -39,9 +39,9 @@ export default function Start() {
     setChecking(true);
     try {
       const res = await axios.get(`http://localhost:${serverPort}/ip/ping`, {
-        params: { windowId: windowId },
+        params: {windowId: windowId},
       });
-      const { pings } = res.data;
+      const {pings} = res.data;
       setPings(pings);
       setChecking(false);
     } catch (error) {
@@ -61,9 +61,9 @@ export default function Start() {
     if (!windowId) return;
     try {
       const res = await axios.get(`http://localhost:${serverPort}/window/info`, {
-        params: { windowId: windowId },
+        params: {windowId: windowId},
       });
-      const { windowData, ipInfo } = res.data;
+      const {windowData, ipInfo} = res.data;
       setWindowInfo(windowData);
       setMoreInfo({
         ...ipInfo,
@@ -82,7 +82,7 @@ export default function Start() {
   useEffect(() => {
     const windowId = search.get('windowId');
     if (windowId) {
-      document.title = `(#${windowId}) ${windowInfo.name || '未命名'} ${moreInfo.ip ? '| IP:' + moreInfo.ip : ''} ｜ Chrome Power`;
+      document.title = `(#${windowId}) ${windowInfo.name || 'Unnamed'} ${moreInfo.ip ? '| IP:' + moreInfo.ip : ''} ｜ Chrome Power`;
     }
   }, [moreInfo.ip, windowInfo.name]);
 
@@ -91,14 +91,14 @@ export default function Start() {
       <Card
         variant="borderless"
         className="shadow-2xl rounded-2xl"
-        style={{ width: 480, margin: '80px auto'}}
+        style={{width: 480, margin: '80px auto'}}
         title={
           <div className="flex items-center justify-center gap-2">
-            <span className="text-lg font-bold text-gray-800">
-              {moreInfo.ip || 'Disconnected'}
-            </span>
+            <span className="text-lg font-bold text-gray-800">{moreInfo.ip || 'Disconnected'}</span>
             <span className="text-sm text-gray-500">
-              {moreInfo.country && moreInfo.timeZone ? `- ${moreInfo.country} - ${moreInfo.timeZone}` : ''}
+              {moreInfo.country && moreInfo.timeZone
+                ? `- ${moreInfo.country} - ${moreInfo.timeZone}`
+                : ''}
             </span>
           </div>
         }
@@ -117,42 +117,69 @@ export default function Start() {
           </div>
         }
       >
-        {/* 窗口信息 */}
+        {/* Window Information */}
         <div className="mb-6">
-          <Title level={5} className="mb-3 text-gray-700">窗口信息</Title>
-          <Descriptions column={1} size="small" colon={false} className="[&_.ant-descriptions-item-label]:text-gray-500 [&_.ant-descriptions-item-label]:w-20 [&_.ant-descriptions-item-content]:text-gray-800">
+          <Title
+            level={5}
+            className="mb-3 text-gray-700"
+          >
+            Window Information
+          </Title>
+          <Descriptions
+            column={1}
+            size="small"
+            colon={false}
+            className="[&_.ant-descriptions-item-label]:text-gray-500 [&_.ant-descriptions-item-label]:w-20 [&_.ant-descriptions-item-content]:text-gray-800"
+          >
             <Descriptions.Item label="ID">{windowInfo.id || '-'}</Descriptions.Item>
-            <Descriptions.Item label="名称">{windowInfo.name || '-'}</Descriptions.Item>
-            <Descriptions.Item label="分组">{windowInfo.group_name || '-'}</Descriptions.Item>
-            <Descriptions.Item label="启动时间">
+            <Descriptions.Item label="Name">{windowInfo.name || '-'}</Descriptions.Item>
+            <Descriptions.Item label="Group">{windowInfo.group_name || '-'}</Descriptions.Item>
+            <Descriptions.Item label="Start Time">
               {(() => {
                 if (!windowInfo.opened_at) return '-';
                 const d = new Date(windowInfo.opened_at);
                 return isNaN(d.getTime()) ? windowInfo.opened_at : d.toLocaleString();
               })()}
             </Descriptions.Item>
-            <Descriptions.Item label="缓存目录">{windowInfo.profile_id || '-'}</Descriptions.Item>
-            <Descriptions.Item label="备注">{windowInfo.remark || '-'}</Descriptions.Item>
-            <Descriptions.Item label="标签">
+            <Descriptions.Item label="Cache Directory">
+              {windowInfo.profile_id || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Remark">{windowInfo.remark || '-'}</Descriptions.Item>
+            <Descriptions.Item label="Tags">
               <Space wrap>
-                {windowInfo.tags_name?.length > 0 ? (
-                  windowInfo.tags_name.map((name, i) => <Tag key={i} color="cyan">{name}</Tag>)
-                ) : (
-                  '-'
-                )}
+                {windowInfo.tags_name?.length > 0
+                  ? windowInfo.tags_name.map((name, i) => (
+                      <Tag
+                        key={i}
+                        color="cyan"
+                      >
+                        {name}
+                      </Tag>
+                    ))
+                  : '-'}
               </Space>
             </Descriptions.Item>
           </Descriptions>
         </div>
 
-        {/* 更多信息 */}
+        {/* More Information */}
         <div>
-          <Title level={5} className="mb-3 text-gray-700">更多信息</Title>
-          <Descriptions column={1} size="small" colon={false} className="[&_.ant-descriptions-item-label]:text-gray-500 [&_.ant-descriptions-item-label]:w-20 [&_.ant-descriptions-item-content]:text-gray-800">
-            <Descriptions.Item label="地理坐标">
+          <Title
+            level={5}
+            className="mb-3 text-gray-700"
+          >
+            More Information
+          </Title>
+          <Descriptions
+            column={1}
+            size="small"
+            colon={false}
+            className="[&_.ant-descriptions-item-label]:text-gray-500 [&_.ant-descriptions-item-label]:w-20 [&_.ant-descriptions-item-content]:text-gray-800"
+          >
+            <Descriptions.Item label="Geographic Coordinates">
               {moreInfo?.ll?.length ? `[${moreInfo.ll[0]}, ${moreInfo.ll[1]}]` : '-'}
             </Descriptions.Item>
-            <Descriptions.Item label="时区">{moreInfo.timeZone || '-'}</Descriptions.Item>
+            <Descriptions.Item label="Time Zone">{moreInfo.timeZone || '-'}</Descriptions.Item>
           </Descriptions>
         </div>
       </Card>

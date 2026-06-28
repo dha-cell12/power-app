@@ -49,28 +49,28 @@ export const initExtensionService = () => {
     },
   );
 
-  // 添加处理上传文件的方法
+  // Add method for handling uploaded files
   ipcMain.handle(
     'extension-upload-package',
     async (_, filePath: string, existingExtensionId?: number) => {
       try {
         const settings = getSettings();
-        // 获取应用数据目录
+        // Get application data directory
         const extensionsPath = join(settings.profileCachePath, 'extensions');
 
-        // 确保扩展目录存在
+        // Ensure extension directory exists
         if (!existsSync(extensionsPath)) {
           mkdirSync(extensionsPath);
         }
 
-        // 为每个扩展创建唯一目录
+        // Create a unique directory for each extension
         const extensionId = existingExtensionId || Date.now();
         const extensionDir = join(extensionsPath, extensionId.toString());
         if (!existsSync(extensionDir)) {
           mkdirSync(extensionDir);
         }
 
-        // 创建临时解压目录
+        // Create temporary extraction directory
         const tempExtractDir = join(extensionDir, 'temp');
         if (existsSync(tempExtractDir)) {
           const {rm} = require('fs/promises');
@@ -78,36 +78,36 @@ export const initExtensionService = () => {
         }
         mkdirSync(tempExtractDir);
 
-        // 复制zip文件到扩展目录
+        // Copy zip file to extension directory
         const destZipPath = join(extensionDir, 'extension.zip');
         copyFileSync(filePath, destZipPath);
 
-        // 先解压到临时目录
+        // Decompress to temporary directory first
         await extract(destZipPath, {dir: tempExtractDir});
 
-        // 现在可以安全地读取 manifest.json 文件
+        // Now manifest.json can be safely read
         const manifestPath = join(tempExtractDir, 'manifest.json');
         const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 
-        // 使用读取到的版本号创建最终目录
+        // Use the read version number to create the final directory
         const versionDir = join(extensionDir, manifest.version);
 
-        // 如果版本目录已存在，先删除它
+        // If version directory already exists, delete it first
         if (existsSync(versionDir)) {
           const {rm} = require('fs/promises');
           await rm(versionDir, {recursive: true, force: true});
         }
 
-        // 创建新的版本目录
+        // Create new version directory
         mkdirSync(versionDir);
 
-        // 将临时目录中的文件移动到版本目录
+        // Move files from temporary directory to version directory
         const files = await readdir(tempExtractDir);
         for (const file of files) {
           await rename(join(tempExtractDir, file), join(versionDir, file));
         }
 
-        // 清理临时文件
+        // Clean up temporary files
         unlinkSync(destZipPath);
         rmdirSync(tempExtractDir);
 
@@ -130,17 +130,17 @@ export const initExtensionService = () => {
 
   ipcMain.handle('extension-sync-windows', async (_, extensionId: number, windowIds: number[]) => {
     try {
-      // 获取当前扩展已关联的所有窗口
+      // Get all windows currently associated with this extension
       const currentWindows = await ExtensionDB.getExtensionWindows(extensionId);
       const currentWindowIds = currentWindows.map(w => w.window_id);
 
-      // 需要删除的窗口关联
+      // Window associations that need to be deleted
       const toDelete = currentWindowIds.filter(id => !windowIds.includes(id));
       if (toDelete.length > 0) {
         await ExtensionDB.deleteExtensionWindows(extensionId, toDelete);
       }
 
-      // 需要新增的窗口关联
+      // Window associations that need to be added
       const toAdd = windowIds.filter(id => !currentWindowIds.includes(id));
       if (toAdd.length > 0) {
         await ExtensionDB.insertExtensionWindows(extensionId, toAdd);
@@ -148,12 +148,12 @@ export const initExtensionService = () => {
 
       return {
         success: true,
-        message: '同步成功',
+        message: 'Sync successfully',
       };
     } catch (error) {
       return {
         success: false,
-        message: '同步失败',
+        message: 'Sync failed',
       };
     }
   });

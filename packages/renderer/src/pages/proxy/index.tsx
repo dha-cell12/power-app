@@ -307,7 +307,14 @@ const Proxy = () => {
     const worksheet = workbook.addWorksheet('Proxy');
     worksheet.addRow(['ID', 'Proxy', 'Proxy Type', 'IP', 'Remark', 'Checker']);
     data.forEach(item => {
-      worksheet.addRow([item.id, item.proxy, item.proxy_type, item.ip, item.remark, item.ip_checker]);
+      worksheet.addRow([
+        item.id,
+        item.proxy,
+        item.proxy_type,
+        item.ip,
+        item.remark,
+        item.ip_checker,
+      ]);
     });
     const buffer = await workbook.xlsx.writeBuffer();
     const result = await CommonBridge?.saveDialog({
@@ -465,7 +472,11 @@ const Proxy = () => {
 
   return (
     <div className="page-container">
-      <Flex align="center" justify="space-between" className="page-toolbar">
+      <Flex
+        align="center"
+        justify="space-between"
+        className="page-toolbar"
+      >
         {contextHolder}
         <Space size={16}>
           <Input
@@ -474,7 +485,11 @@ const Proxy = () => {
             onChange={e => handleSearchValueChange(e.target.value)}
             prefix={<SearchOutlined />}
           />
-          <Button icon={<WifiOutlined />} onClick={() => checkProxy()} type="primary">
+          <Button
+            icon={<WifiOutlined />}
+            onClick={() => checkProxy()}
+            type="primary"
+          >
             {t('proxy_check')}
           </Button>
           <Button
@@ -489,15 +504,27 @@ const Proxy = () => {
           </Button>
         </Space>
         <Space size={8}>
-          <Button icon={<GlobalOutlined />} onClick={() => newProxy()} type="primary">
+          <Button
+            icon={<GlobalOutlined />}
+            onClick={() => newProxy()}
+            type="primary"
+          >
             {t('proxy_new_proxy')}
           </Button>
-          <Dropdown menu={{ items: moreActionDropdownItems, onClick: menuInfo => moreAction(menuInfo) }}>
-            <Button type="default" icon={<MoreOutlined />} />
+          <Dropdown
+            menu={{items: moreActionDropdownItems, onClick: menuInfo => moreAction(menuInfo)}}
+          >
+            <Button
+              type="default"
+              icon={<MoreOutlined />}
+            />
           </Dropdown>
         </Space>
       </Flex>
-      <Card variant="borderless" className="page-card">
+      <Card
+        variant="borderless"
+        className="page-card"
+      >
         <Table
           columns={columns}
           rowKey={'id'}
@@ -508,7 +535,11 @@ const Proxy = () => {
           pagination={false}
         />
       </Card>
-      <Flex justify="flex-end" align="center" className="page-pagination">
+      <Flex
+        justify="flex-end"
+        align="center"
+        className="page-pagination"
+      >
         <Pagination
           current={currentPage}
           total={proxyData.length}
@@ -547,19 +578,29 @@ const Proxy = () => {
         width={560}
         onOk={onUpdateModalOk}
         onCancel={onUpdateModalCancel}
-        footer={(_, { OkBtn, CancelBtn }) => (
-          <Flex justify="space-between" align="center">
+        footer={(_, {OkBtn, CancelBtn}) => (
+          <Flex
+            justify="space-between"
+            align="center"
+          >
             <Space>
-              {(updateChecking || updateCheckResult) && PIN_URL?.map((m, index: number) => (
-                <Badge
-                  key={index}
-                  status={getStatus(updateChecking, updateCheckResult, index)}
-                  text={m.n}
-                />
-              ))}
+              {(updateChecking || updateCheckResult) &&
+                PIN_URL?.map((m, index: number) => (
+                  <Badge
+                    key={index}
+                    status={getStatus(updateChecking, updateCheckResult, index)}
+                    text={m.n}
+                  />
+                ))}
             </Space>
             <Space>
-              <Button loading={updateChecking} onClick={onUpdateModalCheck} type="link">Check</Button>
+              <Button
+                loading={updateChecking}
+                onClick={onUpdateModalCheck}
+                type="link"
+              >
+                Check
+              </Button>
               <CancelBtn />
               <OkBtn />
             </Space>
@@ -579,14 +620,24 @@ const Proxy = () => {
             name="proxy_type"
             rules={[{required: true, message: 'Please Select Proxy Type!'}]}
           >
-            <Select options={[{label: 'Socks5', value: 'socks5'}, {label: 'Http', value: 'http'}]} />
+            <Select
+              options={[
+                {label: 'Socks5', value: 'socks5'},
+                {label: 'Http', value: 'http'},
+              ]}
+            />
           </Form.Item>
           <Form.Item<ProxyFormProps>
             label="IP Checker"
             name="ip_checker"
             rules={[{required: true, message: 'Please Select IP Checker!'}]}
           >
-            <Select options={[{label: 'Ip2Location', value: 'ip2location'}, {label: 'GeoIp', value: 'geoip'}]} />
+            <Select
+              options={[
+                {label: 'Ip2Location', value: 'ip2location'},
+                {label: 'GeoIp', value: 'geoip'},
+              ]}
+            />
           </Form.Item>
           <Form.Item<ProxyFormProps>
             label="Host"
@@ -612,7 +663,9 @@ const Proxy = () => {
             label="Password"
             name="password"
           >
-            <Input.Password iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleTwoTone />)} />
+            <Input.Password
+              iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleTwoTone />)}
+            />
           </Form.Item>
           <Form.Item<ProxyFormProps>
             label="Remark"

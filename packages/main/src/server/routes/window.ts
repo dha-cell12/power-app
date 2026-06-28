@@ -25,14 +25,16 @@ router.get('/info', async (req, res) => {
     }
     ipInfo = await getProxyInfo(proxyData);
 
-    // 计算用户目录绝对路径
+    // Calculate absolute path of user directory
     if (windowData.profile_id) {
       const settings = getSettings();
       const cachePath = settings.profileCachePath;
-      const useLocalChrome = windowData?.localChromePath ? true : (windowData.useLocalChrome ?? settings.useLocalChrome);
+      const useLocalChrome = windowData?.localChromePath
+        ? true
+        : (windowData.useLocalChrome ?? settings.useLocalChrome);
       windowData.userDataDir = join(
         cachePath,
-        windowData?.localChromePath ? 'chrome' : (useLocalChrome ? 'chrome' : 'chromium'),
+        windowData?.localChromePath ? 'chrome' : useLocalChrome ? 'chrome' : 'chromium',
         windowData.profile_id,
       );
     }

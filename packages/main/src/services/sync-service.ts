@@ -1,22 +1,19 @@
 import {app, ipcMain, systemPreferences, shell} from 'electron';
 import path from 'path';
 import type {SafeAny} from '../../../shared/types/db';
-import { createLogger } from '../../../shared/utils/logger';
-import { MAIN_LOGGER_LABEL } from '../constants';
-import { dialog } from 'electron';
-import puppeteer from 'puppeteer';
-import api from '../../../shared/api/api';
-import {HOST} from '../mainWindow';
+import {createLogger} from '../../../shared/utils/logger';
+import {MAIN_LOGGER_LABEL} from '../constants';
+import {dialog} from 'electron';
 
 const logger = createLogger(MAIN_LOGGER_LABEL);
 let addon: unknown;
 if (!app.isPackaged) {
-  // 开发环境：直接从构建目录加载
+  // Development environment: load directly from build directory
   addon = require(path.join(__dirname, '../src/native-addon/build/Release/', 'window-addon.node'));
 } else {
-  // 生产环境：根据平台和架构选择正确路径
+  // Production environment: choose correct path based on platform and architecture
   // const addonDir = `${process.platform}-${process.arch}`;
-  
+
   const addonPath = path.join(
     process.resourcesPath,
     'app.asar.unpacked/node_modules/window-addon/',
@@ -37,30 +34,35 @@ export const initSyncService = () => {
     logger.error('Window addon not loaded properly', process.resourcesPath);
     return;
   }
-  
-  // 检查辅助功能权限（仅macOS）
+
+  // Check accessibility permissions (macOS only)
   if (process.platform === 'darwin') {
     const hasPermission = systemPreferences.isTrustedAccessibilityClient(false);
     logger.info(`Accessibility permission: ${hasPermission ? 'granted' : 'denied'}`);
-    
+
     if (!hasPermission) {
-      // 在应用启动时提示用户授予权限
-      logger.warn('应用需要辅助功能权限来排列窗口');
-      dialog.showMessageBox({
-        type: 'warning',
-        title: '需要辅助功能权限',
-        message: '请在系统偏好设置中为应用授予辅助功能权限，以启用窗口排列功能。',
-        buttons: ['前往设置', '稍后再说'],
-        defaultId: 0,
-      }).then(({ response }) => {
-        if (response === 0) {
-          // 打开辅助功能设置
-          shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility');
-        }
-      });
+      // Prompt user to grant permission at app startup
+      logger.warn('App needs accessibility permissions to arrange windows');
+      dialog
+        .showMessageBox({
+          type: 'warning',
+          title: 'Accessibility Permissions Required',
+          message:
+            'Please grant the app accessibility permissions in System Preferences to enable window arrangement features.',
+          buttons: ['Go to Settings', 'Later'],
+          defaultId: 0,
+        })
+        .then(({response}) => {
+          if (response === 0) {
+            // Open accessibility settings
+            shell.openExternal(
+              'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility',
+            );
+          }
+        });
     }
   }
-  
+
   const windowManager = new (addon as SafeAny).WindowManager();
 
   logger.info('WindowManager initialized');
