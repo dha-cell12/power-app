@@ -104,7 +104,7 @@ module.exports = async function () {
         },
       ],
       category: 'public.app-category.developer-tools',
-      hardenedRuntime: true, 
+      hardenedRuntime: true,
       gatekeeperAssess: false,
       entitlements: 'buildResources/entitlements.mac.plist',
       entitlementsInherit: 'buildResources/entitlements.mac.plist',
@@ -127,25 +127,31 @@ module.exports = async function () {
     },
 
     // 在打包后复制 window-addon.node 到最终目录
-    afterPack: async (context) => {
+    afterPack: async context => {
       const fs = require('fs');
       const path = require('path');
-      const { electronPlatformName, arch, appOutDir } = context;
+      const {electronPlatformName, arch, appOutDir} = context;
 
       // electron-builder 的 arch 是数字枚举，需要转换为字符串
-      const archMap = { 0: 'ia32', 1: 'x64', 2: 'armv7l', 3: 'arm64', 4: 'universal' };
+      const archMap = {0: 'ia32', 1: 'x64', 2: 'armv7l', 3: 'arm64', 4: 'universal'};
       const archString = archMap[arch] || String(arch);
 
       console.log(`Copying window-addon for ${electronPlatformName}-${archString}...`);
 
-      // native addon 编译产物直接放在 Release 目录下，没有按平台/架构分子目录
-      const sourcePath = path.join(__dirname, 'packages/main/src/native-addon/build/Release/window-addon.node');
+      // native addon 编译产物按平台/架构放在子目录下
+      const sourcePath = path.join(
+        __dirname,
+        `packages/main/src/native-addon/build/Release/${electronPlatformName}-${archString}/window-addon.node`,
+      );
 
       // Mac 应用有 .app 包结构，需要特殊处理路径
       let targetDir;
       if (electronPlatformName === 'darwin') {
         const appName = context.packager.appInfo.productFilename;
-        targetDir = path.join(appOutDir, `${appName}.app/Contents/Resources/app.asar.unpacked/node_modules/window-addon`);
+        targetDir = path.join(
+          appOutDir,
+          `${appName}.app/Contents/Resources/app.asar.unpacked/node_modules/window-addon`,
+        );
       } else {
         targetDir = path.join(appOutDir, 'resources/app.asar.unpacked/node_modules/window-addon');
       }
@@ -161,7 +167,7 @@ module.exports = async function () {
 
         // 创建目标目录
         if (!fs.existsSync(targetDir)) {
-          fs.mkdirSync(targetDir, { recursive: true });
+          fs.mkdirSync(targetDir, {recursive: true});
           console.log(`Created directory: ${targetDir}`);
         }
 

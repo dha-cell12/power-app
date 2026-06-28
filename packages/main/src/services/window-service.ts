@@ -5,7 +5,11 @@ import * as XLSX from 'xlsx';
 import type {IWindowTemplate} from '../types/window-template';
 import type {DB, SafeAny} from '../../../shared/types/db';
 import {WindowDB} from '../db/window';
-import {closeFingerprintWindow, focusFingerprintWindow, openFingerprintWindow} from '../fingerprint/index';
+import {
+  closeFingerprintWindow,
+  focusFingerprintWindow,
+  openFingerprintWindow,
+} from '../fingerprint/index';
 import {createLogger} from '../../../shared/utils/logger';
 import {SERVICE_LOGGER_LABEL} from '../constants';
 import {randomASCII, randomFloat, randomInt} from '../../../shared/utils';
@@ -77,9 +81,27 @@ export const initWindowService = () => {
       const windows = await WindowDB.all();
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Windows');
-      worksheet.addRow(['ID', 'Profile ID', 'Group', 'Name', 'Remark', 'Proxy', 'Last Open', 'Created At']);
+      worksheet.addRow([
+        'ID',
+        'Profile ID',
+        'Group',
+        'Name',
+        'Remark',
+        'Proxy',
+        'Last Open',
+        'Created At',
+      ]);
       windows.forEach(window => {
-        worksheet.addRow([window.id, window.profile_id, window.group_name, window.name, window.remark, window.proxy, window.opened_at, window.created_at]);
+        worksheet.addRow([
+          window.id,
+          window.profile_id,
+          window.group_name,
+          window.name,
+          window.remark,
+          window.proxy,
+          window.opened_at,
+          window.created_at,
+        ]);
       });
       workbook.xlsx.writeFile('windows.xlsx');
       return {

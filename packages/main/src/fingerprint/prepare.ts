@@ -13,22 +13,27 @@ import {db} from '../db';
 import {getOrigin} from '../server';
 import {bridgeMessageToUI} from '../mainWindow';
 import type {AxiosProxyConfig} from 'axios';
-import { exec } from 'child_process';
+import {exec} from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
 
 const logger = createLogger(PROXY_LOGGER_LABEL);
 
-export async function createShortcutWithIcon(exePath: string, args: string[], iconPath: string, shortcutPath: string) {
+export async function createShortcutWithIcon(
+  exePath: string,
+  args: string[],
+  iconPath: string,
+  shortcutPath: string,
+) {
   try {
     const shortcutDir = path.dirname(shortcutPath);
-    
+
     // 确保目录存在
     if (!fs.existsSync(shortcutDir)) {
-      fs.mkdirSync(shortcutDir, { recursive: true });
+      fs.mkdirSync(shortcutDir, {recursive: true});
     }
-    
+
     // PowerShell 脚本创建快捷方式
     const escapedArgs = args.map(arg => arg.replace(/"/g, '`"')).join(' ');
     const psScript = `
@@ -58,20 +63,27 @@ export async function createShortcutWithIcon(exePath: string, args: string[], ic
     // 将脚本写入临时文件以避免命令行长度限制
     const tempScriptPath = path.join(os.tmpdir(), `create_shortcut_${Date.now()}.ps1`);
     fs.writeFileSync(tempScriptPath, psScript);
-    
+
     return new Promise((resolve, reject) => {
-      exec(`powershell -ExecutionPolicy Bypass -File "${tempScriptPath}"`, (error, stdout, stderr) => {
-        // 清理临时脚本文件
-        try { fs.unlinkSync(tempScriptPath); } catch (e) { /* 忽略删除失败 */ }
-        
-        if (error) {
-          logger.error(`创建快捷方式失败: ${stderr}`);
-          reject(error);
-        } else {
-          logger.info(`创建快捷方式成功: ${shortcutPath}`);
-          resolve(shortcutPath);
-        }
-      });
+      exec(
+        `powershell -ExecutionPolicy Bypass -File "${tempScriptPath}"`,
+        (error, stdout, stderr) => {
+          // 清理临时脚本文件
+          try {
+            fs.unlinkSync(tempScriptPath);
+          } catch (e) {
+            /* 忽略删除失败 */
+          }
+
+          if (error) {
+            logger.error(`创建快捷方式失败: ${stderr}`);
+            reject(error);
+          } else {
+            logger.info(`创建快捷方式成功: ${shortcutPath}`);
+            resolve(shortcutPath);
+          }
+        },
+      );
     });
   } catch (error) {
     logger.error(`创建快捷方式异常: ${error}`);
@@ -83,7 +95,7 @@ const getRealIP = async (proxy: DB.Proxy) => {
   if (!proxy.proxy) {
     return '';
   }
-  
+
   let agent:
     | SocksProxyAgent
     | HttpProxyAgent<`http://${string}:${string}`>

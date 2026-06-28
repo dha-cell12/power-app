@@ -29,7 +29,7 @@ export const arrangeWindows = async () => {
 };
 
 // export const startGroupControl = async (masterProcessId?: number, slaveProcessIds?: number[]) => {
-  
+
 // };
 
 // 创建一个函数，用于接收来自原生插件的消息

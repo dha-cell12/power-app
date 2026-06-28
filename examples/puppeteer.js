@@ -20,7 +20,6 @@ async function randomWait(min, max) {
 // 主要的自动化脚本函数
 export async function autoScript(browser) {
   try {
-    
   } catch (error) {
     console.error('自动化脚本执行出错:', error);
   }

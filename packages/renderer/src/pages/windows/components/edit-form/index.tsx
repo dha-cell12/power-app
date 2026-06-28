@@ -1,13 +1,13 @@
-import { Form, Input, Select, Row, Col, Space, Typography, message, Button } from 'antd';
+import {Form, Input, Select, Row, Col, Space, Typography, message, Button} from 'antd';
 import AddableSelect from '/@/components/addable-select';
-import { useEffect, useState } from 'react';
-import type { DB } from '../../../../../../shared/types/db';
-import { GroupBridge, TagBridge, ProxyBridge, CommonBridge } from '#preload';
-import { TAG_COLORS } from '/@/constants';
-import { useTranslation } from 'react-i18next';
+import {useEffect, useState} from 'react';
+import type {DB} from '../../../../../../shared/types/db';
+import {GroupBridge, TagBridge, ProxyBridge, CommonBridge} from '#preload';
+import {TAG_COLORS} from '/@/constants';
+import {useTranslation} from 'react-i18next';
 
-const { TextArea } = Input;
-const { Text } = Typography;
+const {TextArea} = Input;
+const {Text} = Typography;
 
 const WindowEditForm = ({
   formValue,
@@ -22,7 +22,7 @@ const WindowEditForm = ({
   const [groups, setGroups] = useState<DB.Group[]>([]);
   const [tags, setTags] = useState<DB.Tag[]>([]);
   const [proxies, setProxies] = useState<DB.Proxy[]>([]);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [messageApi, contextHolder] = message.useMessage({
     duration: 3,
     top: 100,
@@ -56,7 +56,7 @@ const WindowEditForm = ({
   }, []);
 
   const onAddGroup = async (name: string) => {
-    const createdIds = await GroupBridge?.create({ name });
+    const createdIds = await GroupBridge?.create({name});
     if (createdIds.length) {
       await fetchGroups();
       return true;
@@ -111,7 +111,7 @@ const WindowEditForm = ({
   ) => {
     const path = await CommonBridge.choosePath(type);
     if (path) {
-      formChangeCallback({ [field]: path }, formValue);
+      formChangeCallback({[field]: path}, formValue);
     }
   };
 
@@ -125,8 +125,8 @@ const WindowEditForm = ({
       size="large"
       initialValues={formValue}
       onValuesChange={formChangeCallback}
-      labelCol={{ span: 24 }}
-      wrapperCol={{ span: 24 }}
+      labelCol={{span: 24}}
+      wrapperCol={{span: 24}}
     >
       {contextHolder}
       <Row gutter={24}>
@@ -179,7 +179,7 @@ const WindowEditForm = ({
               allowClear
               showSearch
               filterOption={filterProxyOption}
-              fieldNames={{ label: 'proxy', value: 'id' }}
+              fieldNames={{label: 'proxy', value: 'id'}}
               optionRender={option => {
                 return (
                   <Row justify="space-between">
@@ -190,16 +190,16 @@ const WindowEditForm = ({
                     <Col span={16}>
                       <Space direction="vertical">
                         <Text
-                          style={{ width: 200 }}
-                          ellipsis={{ tooltip: `${option.data.proxy}  ${option.data.remark}` }}
+                          style={{width: 200}}
+                          ellipsis={{tooltip: `${option.data.proxy}  ${option.data.remark}`}}
                         >
                           {option.data.proxy}
                         </Text>
                         {option.data.remark && (
                           <Text
                             mark
-                            style={{ width: 200 }}
-                            ellipsis={{ tooltip: `${option.data.proxy}  ${option.data.remark}` }}
+                            style={{width: 200}}
+                            ellipsis={{tooltip: `${option.data.proxy}  ${option.data.remark}`}}
                           >
                             {option.data.remark}
                           </Text>
@@ -220,13 +220,13 @@ const WindowEditForm = ({
             ></Select>
           </Form.Item>
         </Col>
-        
+
         <Col span={12}>
           <Form.Item<FieldType>
             label="Chrome.exe 路径"
             name="localChromePath"
           >
-            <Space.Compact style={{ width: '100%' }}>
+            <Space.Compact style={{width: '100%'}}>
               <Input
                 readOnly
                 disabled
@@ -250,8 +250,6 @@ const WindowEditForm = ({
             <Input />
           </Form.Item>
         </Col>
-
-
 
         <Col span={12}>
           <Form.Item<FieldType>

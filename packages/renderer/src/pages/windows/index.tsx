@@ -1,4 +1,4 @@
-import type { MenuProps } from 'antd';
+import type {MenuProps} from 'antd';
 import {
   Button,
   Card,
@@ -16,10 +16,10 @@ import {
   Flex,
   Pagination,
 } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import type { MenuInfo } from 'rc-menu/lib/interface';
-import { useEffect, useMemo, useState } from 'react';
-import _, { debounce } from 'lodash';
+import type {ColumnsType} from 'antd/es/table';
+import type {MenuInfo} from 'rc-menu/lib/interface';
+import {useEffect, useMemo, useState} from 'react';
+import _, {debounce} from 'lodash';
 import * as ExcelJS from 'exceljs';
 
 import {
@@ -36,27 +36,27 @@ import {
   ExclamationCircleFilled,
   ExportOutlined,
 } from '@ant-design/icons';
-import type { DB } from '../../../../shared/types/db';
-import { CommonBridge, GroupBridge, ProxyBridge, TagBridge, WindowBridge } from '#preload';
-import type { SearchProps } from 'antd/es/input';
-import { containsKeyword } from '/@/utils/str';
-import { useNavigate } from 'react-router-dom';
-import { MESSAGE_CONFIG, WINDOW_STATUS } from '/@/constants';
-import { useTranslation } from 'react-i18next';
+import type {DB} from '../../../../shared/types/db';
+import {CommonBridge, GroupBridge, ProxyBridge, TagBridge, WindowBridge} from '#preload';
+import type {SearchProps} from 'antd/es/input';
+import {containsKeyword} from '/@/utils/str';
+import {useNavigate} from 'react-router-dom';
+import {MESSAGE_CONFIG, WINDOW_STATUS} from '/@/constants';
+import {useTranslation} from 'react-i18next';
 
-const { Text } = Typography;
+const {Text} = Typography;
 
 const Windows = () => {
   const OFFSET = 200;
   const [group, setGroup] = useState(-1);
   const [searchValue, setSearchValue] = useState('');
   const [tableScrollY, setTableScrollY] = useState(window.innerHeight - OFFSET);
-  const { t, i18n } = useTranslation();
+  const {t, i18n} = useTranslation();
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedRow, setSelectedRow] = useState<DB.Window>();
   const [rawWindowData, setRawWindowData] = useState<DB.Window[]>([]);
-  const [groupOptions, setGroupOptions] = useState<DB.Group[]>([{ id: -1, name: 'All' }]);
+  const [groupOptions, setGroupOptions] = useState<DB.Group[]>([{id: -1, name: 'All'}]);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [tagMap, setTagMap] = useState(new Map<number, DB.Tag>());
   const [messageApi, contextHolder] = message.useMessage(MESSAGE_CONFIG);
@@ -271,20 +271,21 @@ const Windows = () => {
     // 按搜索关键词过滤
     if (searchValue) {
       const keyword = searchValue.toLowerCase();
-      filtered = filtered.filter(f =>
-        containsKeyword(f.group_name, keyword) ||
-        containsKeyword(f.name, keyword) ||
-        containsKeyword(f.id, keyword) ||
-        containsKeyword(f.ip, keyword) ||
-        containsKeyword(f.profile_id, keyword) ||
-        containsKeyword(f.proxy, keyword) ||
-        (f.tags &&
-          ((f.tags instanceof Array &&
-            f.tags.some(tag => containsKeyword(tagMap.get(Number(tag))?.name, keyword))) ||
-            f.tags
-              .toString()
-              .split(',')
-              .some(tag => containsKeyword(tagMap.get(Number(tag))?.name, keyword))))
+      filtered = filtered.filter(
+        f =>
+          containsKeyword(f.group_name, keyword) ||
+          containsKeyword(f.name, keyword) ||
+          containsKeyword(f.id, keyword) ||
+          containsKeyword(f.ip, keyword) ||
+          containsKeyword(f.profile_id, keyword) ||
+          containsKeyword(f.proxy, keyword) ||
+          (f.tags &&
+            ((f.tags instanceof Array &&
+              f.tags.some(tag => containsKeyword(tagMap.get(Number(tag))?.name, keyword))) ||
+              f.tags
+                .toString()
+                .split(',')
+                .some(tag => containsKeyword(tagMap.get(Number(tag))?.name, keyword)))),
       );
     }
 
@@ -322,7 +323,7 @@ const Windows = () => {
 
   const fetchGroupData = async () => {
     const data = await GroupBridge?.getAll();
-    data.splice(0, 0, { id: -1, name: 'All' });
+    data.splice(0, 0, {id: -1, name: 'All'});
     setGroupOptions(data);
   };
 
@@ -366,7 +367,17 @@ const Windows = () => {
       const worksheet = workbook.addWorksheet('Windows');
 
       // 添加表头
-      worksheet.addRow(['ID', 'Profile ID', 'Group', 'Name', 'Remark', 'Tags', 'Proxy', 'Last Open', 'Created At']);
+      worksheet.addRow([
+        'ID',
+        'Profile ID',
+        'Group',
+        'Name',
+        'Remark',
+        'Tags',
+        'Proxy',
+        'Last Open',
+        'Created At',
+      ]);
 
       // 添加数据
       data.forEach(item => {
@@ -376,10 +387,26 @@ const Windows = () => {
           item.group_name,
           item.name,
           item.remark,
-          item.tags ? item.tags.toString().split(',').map(tag => tagMap.get(Number(tag))?.name).join(',') : '',
+          item.tags
+            ? item.tags
+                .toString()
+                .split(',')
+                .map(tag => tagMap.get(Number(tag))?.name)
+                .join(',')
+            : '',
           item.proxy,
-          item.opened_at ? (() => { const d = new Date(item.opened_at); return isNaN(d.getTime()) ? '' : d.toLocaleString(); })() : '',
-          item.created_at ? (() => { const d = new Date(item.created_at); return isNaN(d.getTime()) ? '' : d.toLocaleString(); })() : ''
+          item.opened_at
+            ? (() => {
+                const d = new Date(item.opened_at);
+                return isNaN(d.getTime()) ? '' : d.toLocaleString();
+              })()
+            : '',
+          item.created_at
+            ? (() => {
+                const d = new Date(item.created_at);
+                return isNaN(d.getTime()) ? '' : d.toLocaleString();
+              })()
+            : '',
         ]);
       });
 
@@ -395,9 +422,7 @@ const Windows = () => {
       const result = await CommonBridge?.saveDialog({
         title: 'Save Windows Data',
         defaultPath: 'windows.xlsx',
-        filters: [
-          { name: 'Excel Files', extensions: ['xlsx'] }
-        ]
+        filters: [{name: 'Excel Files', extensions: ['xlsx']}],
       });
 
       if (result.filePath) {
@@ -421,14 +446,14 @@ const Windows = () => {
   useEffect(() => {
     const handleWindowClosed = (_: Electron.IpcRendererEvent, id: number) => {
       setRawWindowData(windowData =>
-        windowData.map(window => (window.id === id ? { ...window, status: 1 } : window)),
+        windowData.map(window => (window.id === id ? {...window, status: 1} : window)),
       );
     };
 
     const handleWindowOpened = (_: Electron.IpcRendererEvent, id: number) => {
       if (id) {
         setRawWindowData(windowData =>
-          windowData.map(window => (window.id === id ? { ...window, status: 2 } : window)),
+          windowData.map(window => (window.id === id ? {...window, status: 2} : window)),
         );
       } else {
         messageApi.error('Failed to open window');
@@ -570,21 +595,25 @@ const Windows = () => {
 
   return (
     <div className="page-container">
-      <Flex align="center" justify="space-between" className="page-toolbar">
+      <Flex
+        align="center"
+        justify="space-between"
+        className="page-toolbar"
+      >
         {contextHolder}
         <Space size={16}>
           <Select
             value={group}
             defaultValue={-1}
             defaultActiveFirstOption={true}
-            style={{ width: 120 }}
-            fieldNames={{ value: 'id', label: 'name' }}
+            style={{width: 120}}
+            fieldNames={{value: 'id', label: 'name'}}
             onChange={handleGroupChange}
             options={groupOptions}
           />
           <Input
             value={searchValue}
-            style={{ maxWidth: 240 }}
+            style={{maxWidth: 240}}
             placeholder="Search"
             onChange={e => handleSearchValueChange(e.target.value)}
             prefix={<SearchOutlined />}
@@ -601,27 +630,43 @@ const Windows = () => {
           </Button>
         </Space>
         <Space size={8}>
-          <Button icon={<ChromeOutlined />} onClick={() => openWindows()} type="primary">
+          <Button
+            icon={<ChromeOutlined />}
+            onClick={() => openWindows()}
+            type="primary"
+          >
             {t('window_open')}
           </Button>
-          <Button type="default" onClick={() => closeWindows()} icon={<CloseOutlined />}>
+          <Button
+            type="default"
+            onClick={() => closeWindows()}
+            icon={<CloseOutlined />}
+          >
             {t('window_close')}
           </Button>
-          <Dropdown menu={{ items: moreActionDropdownItems, onClick: menuInfo => moreAction(menuInfo) }}>
-            <Button type="default" icon={<MoreOutlined />} />
+          <Dropdown
+            menu={{items: moreActionDropdownItems, onClick: menuInfo => moreAction(menuInfo)}}
+          >
+            <Button
+              type="default"
+              icon={<MoreOutlined />}
+            />
           </Dropdown>
         </Space>
       </Flex>
-      <Card variant="borderless" className="page-card">
+      <Card
+        variant="borderless"
+        className="page-card"
+      >
         <Table
           columns={columns}
           rowKey={'id'}
           loading={loading}
           rowSelection={rowSelection}
           dataSource={windowData}
-          scroll={{ y: 'auto' }}
+          scroll={{y: 'auto'}}
           pagination={false}
-          onRow={(record) => ({
+          onRow={record => ({
             onDoubleClick: async () => {
               if (record.status === 2 && record.id) {
                 // 窗口正在运行，双击找到并聚焦
@@ -631,7 +676,11 @@ const Windows = () => {
           })}
         />
       </Card>
-      <Flex justify="flex-end" align="center" className="page-pagination">
+      <Flex
+        justify="flex-end"
+        align="center"
+        className="page-pagination"
+      >
         <Pagination
           current={currentPage}
           total={filteredData.length}
@@ -672,7 +721,7 @@ const Windows = () => {
         title="Proxy Setting"
         onOk={handleProxySettingSave}
         onCancel={setProxySettingVisible.bind(null, false)}
-        footer={(_, { OkBtn, CancelBtn }) => (
+        footer={(_, {OkBtn, CancelBtn}) => (
           <>
             <CancelBtn />
             <OkBtn />
@@ -683,7 +732,7 @@ const Windows = () => {
           placeholder="Proxy"
           options={proxies}
           size="large"
-          style={{ width: '100%' }}
+          style={{width: '100%'}}
           value={selectedProxy}
           showSearch
           allowClear
@@ -691,17 +740,26 @@ const Windows = () => {
             setSelectedProxy(value);
           }}
           filterOption={filterProxyOption}
-          fieldNames={{ label: 'proxy', value: 'id' }}
+          fieldNames={{label: 'proxy', value: 'id'}}
           optionRender={option => {
             return (
-              <Flex justify="space-between" align="center">
+              <Flex
+                justify="space-between"
+                align="center"
+              >
                 <Text code>#{option.data.id}</Text>
-                <Space direction="vertical" style={{ maxWidth: 300 }}>
-                  <Text ellipsis={{ tooltip: `${option.data.proxy}  ${option.data.remark}` }}>
+                <Space
+                  direction="vertical"
+                  style={{maxWidth: 300}}
+                >
+                  <Text ellipsis={{tooltip: `${option.data.proxy}  ${option.data.remark}`}}>
                     {option.data.proxy}
                   </Text>
                   {option.data.remark && (
-                    <Text mark ellipsis={{ tooltip: `${option.data.proxy}  ${option.data.remark}` }}>
+                    <Text
+                      mark
+                      ellipsis={{tooltip: `${option.data.proxy}  ${option.data.remark}`}}
+                    >
                       {option.data.remark}
                     </Text>
                   )}

@@ -41,7 +41,7 @@ jobs:
       fail-fast: false  # 更改为false，允许一个平台失败时其他平台继续
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             arch: x64
             platform: win
           - os: macos-latest
@@ -66,6 +66,7 @@ jobs:
 
       # 配置环境变量
       - name: Configure environment
+        shell: bash
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
           ELECTRON_MIRROR: "https://npmmirror.com/mirrors/electron/"
@@ -73,9 +74,15 @@ jobs:
         run: |
           echo "Environment configured"
           # 设置平台特定环境变量
-          if [ "${{ matrix.platform }}" == "mac-arm64" ]; then
+          if [ "${{ matrix.platform }}" == "win" ]; then
+            echo "ELECTRON_PLATFORM=win32" >> $GITHUB_ENV
+            echo "ELECTRON_ARCH=x64" >> $GITHUB_ENV
+            echo "GYP_MSVS_VERSION=2022" >> $GITHUB_ENV
+          elif [ "${{ matrix.platform }}" == "mac-arm64" ]; then
+            echo "ELECTRON_PLATFORM=darwin" >> $GITHUB_ENV
             echo "ELECTRON_ARCH=arm64" >> $GITHUB_ENV
           elif [ "${{ matrix.platform }}" == "mac-x64" ]; then
+            echo "ELECTRON_PLATFORM=darwin" >> $GITHUB_ENV
             echo "ELECTRON_ARCH=x64" >> $GITHUB_ENV
           fi
 
@@ -131,8 +138,18 @@ jobs:
           retry_wait_seconds: 30
           command: npm ci --verbose
         env:
-          ELECTRON_PLATFORM: ${{ startsWith(matrix.platform, 'mac') && 'darwin' || '' }}
-          ELECTRON_ARCH: ${{ matrix.arch }}
+          ELECTRON_PLATFORM: ${{ env.ELECTRON_PLATFORM }}
+          ELECTRON_ARCH: ${{ env.ELECTRON_ARCH }}
+          GYP_MSVS_VERSION: 2022
+          npm_config_msvs_version: 2022
+
+      - name: Build Native Addon
+        run: node scripts/build-native-addon.js
+        env:
+          ELECTRON_PLATFORM: ${{ env.ELECTRON_PLATFORM }}
+          ELECTRON_ARCH: ${{ env.ELECTRON_ARCH }}
+          GYP_MSVS_VERSION: 2022
+          npm_config_msvs_version: 2022
       # 安装Apple证书
       - name: Install Apple certificates
         if: startsWith(matrix.platform, 'mac')
@@ -142,6 +159,10 @@ jobs:
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
         run: |
+          if [ -z "$BUILD_CERTIFICATE_BASE64" ]; then
+            echo "No certificate provided, skipping..."
+            exit 0
+          fi
           CERTIFICATE_PATH=$HOME/certificates
           KEYCHAIN_PATH=$HOME/Library/Keychains/build.keychain-db
           
@@ -211,7 +232,18 @@ jobs:
           BUILD_TIME: ${{ github.run_number }}
           APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
           ELECTRON_ARCH: arm64
-      
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build-${{ github.run_number }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.blockmap
+          retention-days: 7
+
       # # macOS特定：签名原生模块（如果需要）
       # - name: Sign native modules (macOS)
       #   if: startsWith(matrix.platform, 'mac') && !inputs.dry-run

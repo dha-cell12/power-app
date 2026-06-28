@@ -29,10 +29,12 @@ router.get('/info', async (req, res) => {
     if (windowData.profile_id) {
       const settings = getSettings();
       const cachePath = settings.profileCachePath;
-      const useLocalChrome = windowData?.localChromePath ? true : (windowData.useLocalChrome ?? settings.useLocalChrome);
+      const useLocalChrome = windowData?.localChromePath
+        ? true
+        : (windowData.useLocalChrome ?? settings.useLocalChrome);
       windowData.userDataDir = join(
         cachePath,
-        windowData?.localChromePath ? 'chrome' : (useLocalChrome ? 'chrome' : 'chromium'),
+        windowData?.localChromePath ? 'chrome' : useLocalChrome ? 'chrome' : 'chromium',
         windowData.profile_id,
       );
     }

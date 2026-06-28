@@ -184,7 +184,8 @@ i18n
           sync_stop: 'Stop Sync',
           sync_selected: 'Selected',
           sync_active_title: 'Synchronization Active',
-          sync_active_desc: 'Events from master window are being synchronized to {{count}} slave window(s).',
+          sync_active_desc:
+            'Events from master window are being synchronized to {{count}} slave window(s).',
           sync_opened_windows: 'Opened Windows',
           sync_master_info: 'Master: {{name}} • Slaves: {{count}}',
           sync_control_panel: 'Control Panel',
