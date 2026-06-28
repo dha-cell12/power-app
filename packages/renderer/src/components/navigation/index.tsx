@@ -33,11 +33,11 @@ export default function Navigation() {
 
   return (
     <>
-      <div style={{ margin: '16px 8px' }}>
+      <div style={{margin: '16px 8px'}}>
         <Button
           type="primary"
           block
-          style={{ height: 40 }}
+          style={{height: 40}}
           onClick={() => {
             navigate('/window/create');
           }}
