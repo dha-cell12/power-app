@@ -19,30 +19,30 @@ const getIPInfo = async (ip: string, gateway: 'ip2location' | 'geoip') => {
     if (ip.includes(':')) {
       return {
         ip,
-    };
-  }
-  if (gateway === 'ip2location') {
-    const ip2location = new IP2Location();
-    const filePath = path.join(
-      import.meta.env.MODE === 'development' ? 'assets' : `${process.resourcesPath}/app/assets`,
-      'IP2LOCATION-LITE-DB11.BIN',
-    );
-    ip2location.open(filePath);
-    const ipInfo = ip2location.getAll(ip);
-    const {latitude, longitude, countryShort} = ipInfo;
-    const timeZone = latitude && longitude ? find(Number(latitude), Number(longitude)) : [];
-    return {
-      country: countryShort,
-      ip,
-      ll: [latitude, longitude],
-      timeZone: timeZone[0],
-    };
-  } else if (gateway === 'geoip') {
-    const ipInfo = geoip.lookup(ip);
-    const {ll, country, timezone} = ipInfo;
-    return {
-      country,
-      ip,
+      };
+    }
+    if (gateway === 'ip2location') {
+      const ip2location = new IP2Location();
+      const filePath = path.join(
+        import.meta.env.MODE === 'development' ? 'assets' : `${process.resourcesPath}/app/assets`,
+        'IP2LOCATION-LITE-DB11.BIN',
+      );
+      ip2location.open(filePath);
+      const ipInfo = ip2location.getAll(ip);
+      const {latitude, longitude, countryShort} = ipInfo;
+      const timeZone = latitude && longitude ? find(Number(latitude), Number(longitude)) : [];
+      return {
+        country: countryShort,
+        ip,
+        ll: [latitude, longitude],
+        timeZone: timeZone[0],
+      };
+    } else if (gateway === 'geoip') {
+      const ipInfo = geoip.lookup(ip);
+      const {ll, country, timezone} = ipInfo;
+      return {
+        country,
+        ip,
         ll,
         timeZone: timezone,
       };

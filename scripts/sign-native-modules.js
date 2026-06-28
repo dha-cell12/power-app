@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const {execSync} = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
@@ -28,7 +28,7 @@ console.log('Signing native modules...');
 // 找到所有 .node 文件并单独签名
 function signNativeModules(directory) {
   try {
-    const files = fs.readdirSync(directory, { withFileTypes: true });
+    const files = fs.readdirSync(directory, {withFileTypes: true});
     for (const file of files) {
       const fullPath = path.join(directory, file.name);
       if (file.isDirectory()) {
@@ -36,7 +36,10 @@ function signNativeModules(directory) {
       } else if (file.name.endsWith('.node')) {
         console.log(`Signing ${fullPath}`);
         try {
-          execSync(`codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${fullPath}"`, { stdio: 'inherit' });
+          execSync(
+            `codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${fullPath}"`,
+            {stdio: 'inherit'},
+          );
         } catch (err) {
           console.error(`Failed to sign ${fullPath}:`, err);
         }
@@ -57,42 +60,51 @@ if (fs.existsSync(unpackedPath)) {
 
 // 最后重新签名整个应用
 console.log('Re-signing entire application...');
-execSync(`codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${appPath}"`, { stdio: 'inherit' });
+execSync(
+  `codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${appPath}"`,
+  {stdio: 'inherit'},
+);
 
 // 设置执行权限
 console.log('设置执行权限...');
-execSync(`chmod -R +x "${appPath}"`, { stdio: 'inherit' });
+execSync(`chmod -R +x "${appPath}"`, {stdio: 'inherit'});
 console.log(`特别设置主程序权限: ${appPath}/Contents/MacOS/Chrome Power`);
-execSync(`chmod +x "${appPath}/Contents/MacOS/Chrome Power"`, { stdio: 'inherit' });
+execSync(`chmod +x "${appPath}/Contents/MacOS/Chrome Power"`, {stdio: 'inherit'});
 
 // 移除隔离属性
 console.log('移除隔离属性...');
-execSync(`xattr -dr com.apple.quarantine "${appPath}" || true`, { stdio: 'inherit' });
+execSync(`xattr -dr com.apple.quarantine "${appPath}" || true`, {stdio: 'inherit'});
 
 console.log('验证签名...');
-execSync(`codesign --verify --deep --strict --verbose=2 "${appPath}"`, { stdio: 'inherit' });
+execSync(`codesign --verify --deep --strict --verbose=2 "${appPath}"`, {stdio: 'inherit'});
 
 // 签名所有二进制文件和框架
 console.log('Signing all binaries and frameworks...');
 const exePath = path.join(appPath, 'Contents/MacOS/Chrome Power');
 const helperPath = path.join(appPath, 'Contents/Frameworks/Chrome Power Helper.app');
-const helperEXEPath = path.join(appPath, 'Contents/Frameworks/Chrome Power Helper.app/Contents/MacOS/Chrome Power Helper');
+const helperEXEPath = path.join(
+  appPath,
+  'Contents/Frameworks/Chrome Power Helper.app/Contents/MacOS/Chrome Power Helper',
+);
 
 // 签名 Electron Helper
 if (fs.existsSync(helperPath)) {
   console.log(`Signing Electron Helper: ${helperPath}`);
-  execSync(`codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${helperPath}"`, { stdio: 'inherit' });
-  
+  execSync(
+    `codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${helperPath}"`,
+    {stdio: 'inherit'},
+  );
+
   // 确保 Helper 有执行权限
   if (fs.existsSync(helperEXEPath)) {
     console.log(`Setting permissions for Helper: ${helperEXEPath}`);
-    execSync(`chmod +x "${helperEXEPath}"`, { stdio: 'inherit' });
+    execSync(`chmod +x "${helperEXEPath}"`, {stdio: 'inherit'});
   }
 }
 
 // 确保主程序有执行权限
 console.log(`Setting permissions for main executable: ${exePath}`);
-execSync(`chmod +x "${exePath}"`, { stdio: 'inherit' });
+execSync(`chmod +x "${exePath}"`, {stdio: 'inherit'});
 
 // 签名其他框架
 const frameworksPath = path.join(appPath, 'Contents/Frameworks');
@@ -103,7 +115,10 @@ if (fs.existsSync(frameworksPath)) {
       const frameworkPath = path.join(frameworksPath, framework);
       console.log(`Signing framework: ${frameworkPath}`);
       try {
-        execSync(`codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${frameworkPath}"`, { stdio: 'inherit' });
+        execSync(
+          `codesign --force --sign "${identity}" --timestamp --options runtime --entitlements "${entitlements}" --verbose "${frameworkPath}"`,
+          {stdio: 'inherit'},
+        );
       } catch (err) {
         console.error(`Failed to sign ${frameworkPath}:`, err);
       }

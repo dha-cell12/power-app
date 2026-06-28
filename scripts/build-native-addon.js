@@ -9,7 +9,7 @@
  * 4. 将构建好的模块移动到对应目录
  */
 
-const { execSync } = require('child_process');
+const {execSync} = require('child_process');
 const path = require('path');
 const dotenv = require('dotenv');
 
@@ -48,22 +48,22 @@ try {
   try {
     if (platform === 'win32') {
       console.log('在 Windows 平台构建原生模块...');
-      execSync('npm run build:native-addon', { stdio: 'inherit' });
+      execSync('npm run build:native-addon', {stdio: 'inherit'});
     } else if (platform === 'darwin') {
       if (arch === 'arm64') {
         console.log('在 macOS (arm64) 构建原生模块...');
-        execSync('npm run build:native-addon:mac-arm64', { stdio: 'inherit' });
+        execSync('npm run build:native-addon:mac-arm64', {stdio: 'inherit'});
       } else if (arch === 'x64') {
         console.log('在 macOS (x64) 构建原生模块...');
-        execSync('npm run build:native-addon:mac-x64', { stdio: 'inherit' });
+        execSync('npm run build:native-addon:mac-x64', {stdio: 'inherit'});
       } else {
         console.log(`在 macOS (${arch}) 构建原生模块...`);
-        execSync('npm run build:native-addon', { stdio: 'inherit' });
+        execSync('npm run build:native-addon', {stdio: 'inherit'});
       }
     } else {
       // 其他平台的处理
       console.log(`在 ${platform} 平台构建原生模块...`);
-      execSync('npm run build:native-addon', { stdio: 'inherit' });
+      execSync('npm run build:native-addon', {stdio: 'inherit'});
     }
   } catch (buildError) {
     // Check if source file exists even though build failed
@@ -73,34 +73,34 @@ try {
       throw buildError;
     }
   }
-  
+
   console.log('构建命令执行完成，检查输出文件...');
-  
+
   // 使用命令行列出目录内容
   if (platform === 'win32') {
-    execSync(`dir "${buildDir}"`, { stdio: 'inherit' });
-    execSync(`dir "${releaseDir}"`, { stdio: 'inherit' });
+    execSync(`dir "${buildDir}"`, {stdio: 'inherit'});
+    execSync(`dir "${releaseDir}"`, {stdio: 'inherit'});
   } else {
-    execSync(`ls -la "${buildDir}"`, { stdio: 'inherit' });
-    execSync(`ls -la "${releaseDir}"`, { stdio: 'inherit' });
+    execSync(`ls -la "${buildDir}"`, {stdio: 'inherit'});
+    execSync(`ls -la "${releaseDir}"`, {stdio: 'inherit'});
   }
 
   // 使用命令行创建目录和复制文件
   console.log('创建目标目录并复制文件...');
   if (platform === 'win32') {
-    execSync(`mkdir "${targetDir}" 2>nul || echo "Directory already exists"`, { stdio: 'inherit' });
-    execSync(`copy "${sourcePath}" "${targetDir}\\window-addon.node"`, { stdio: 'inherit' });
+    execSync(`mkdir "${targetDir}" 2>nul || echo "Directory already exists"`, {stdio: 'inherit'});
+    execSync(`copy "${sourcePath}" "${targetDir}\\window-addon.node"`, {stdio: 'inherit'});
   } else {
-    execSync(`mkdir -p "${targetDir}"`, { stdio: 'inherit' });
-    execSync(`cp "${sourcePath}" "${targetDir}/window-addon.node"`, { stdio: 'inherit' });
+    execSync(`mkdir -p "${targetDir}"`, {stdio: 'inherit'});
+    execSync(`cp "${sourcePath}" "${targetDir}/window-addon.node"`, {stdio: 'inherit'});
   }
 
   // 验证文件已复制
   console.log('验证文件已复制...');
   if (platform === 'win32') {
-    execSync(`dir "${targetDir}"`, { stdio: 'inherit' });
+    execSync(`dir "${targetDir}"`, {stdio: 'inherit'});
   } else {
-    execSync(`ls -la "${targetDir}"`, { stdio: 'inherit' });
+    execSync(`ls -la "${targetDir}"`, {stdio: 'inherit'});
   }
 
   console.log('原生模块构建和组织完成！');

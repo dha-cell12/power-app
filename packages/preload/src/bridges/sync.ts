@@ -49,11 +49,7 @@ export const SyncBridge = {
   },
 
   // Multi-window synchronization
-  startSync: (args: {
-    masterWindowId: number;
-    slaveWindowIds: number[];
-    options?: SyncOptions;
-  }) => {
+  startSync: (args: {masterWindowId: number; slaveWindowIds: number[]; options?: SyncOptions}) => {
     return ipcRenderer.invoke('multi-window-sync-start', args);
   },
 
