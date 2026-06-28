@@ -405,33 +405,77 @@ const Extensions = () => {
         </Form.Item>
 
         {form.getFieldValue('id') && !selectedExtension ? (
-          <Flex vertical gap={8}>
+          <Flex
+            vertical
+            gap={8}
+          >
             <div>{t('extension_install_package')}</div>
-            <Flex align="center" gap={8}>
-              <CheckCircleOutlined style={{ color: '#22c55e' }} />
+            <Flex
+              align="center"
+              gap={8}
+            >
+              <CheckCircleOutlined style={{color: '#22c55e'}} />
               {fileList.map(file => (
-                <span key={file.uid} style={{ color: '#6b7280', fontSize: 14 }}>{file.name}</span>
+                <span
+                  key={file.uid}
+                  style={{color: '#6b7280', fontSize: 14}}
+                >
+                  {file.name}
+                </span>
               ))}
               <span>{t('extension_upload_success')}</span>
-              <CloseCircleOutlined style={{ color: '#ef4444', cursor: 'pointer', marginLeft: 8 }} onClick={() => { form.setFieldsValue({id: '', path: ''}); setFileList([]); }} />
+              <CloseCircleOutlined
+                style={{color: '#ef4444', cursor: 'pointer', marginLeft: 8}}
+                onClick={() => {
+                  form.setFieldsValue({id: '', path: ''});
+                  setFileList([]);
+                }}
+              />
             </Flex>
           </Flex>
         ) : (
-          <Form.Item label={t('extension_install_package')} required tooltip={t('extension_install_package_tooltip')}>
+          <Form.Item
+            label={t('extension_install_package')}
+            required
+            tooltip={t('extension_install_package_tooltip')}
+          >
             <Upload.Dragger {...uploadProps}>
-              <CloudUploadOutlined style={{ fontSize: 24 }} />
-              <div style={{ marginTop: 8 }}>{t('extension_upload2')}</div>
-              <div style={{ color: '#9ca3af', fontSize: 14 }}>{t('extension_zip_format_tip')}</div>
+              <CloudUploadOutlined style={{fontSize: 24}} />
+              <div style={{marginTop: 8}}>{t('extension_upload2')}</div>
+              <div style={{color: '#9ca3af', fontSize: 14}}>{t('extension_zip_format_tip')}</div>
             </Upload.Dragger>
-            {uploading && <div style={{ color: '#9ca3af', fontSize: 14, marginTop: 8 }}>{t('extension_uploading')}</div>}
-            {selectedExtension && <div style={{ color: '#9ca3af', fontSize: 14, marginTop: 8 }}>{t('extension_current_version')}: {selectedExtension.version}</div>}
+            {uploading && (
+              <div style={{color: '#9ca3af', fontSize: 14, marginTop: 8}}>
+                {t('extension_uploading')}
+              </div>
+            )}
+            {selectedExtension && (
+              <div style={{color: '#9ca3af', fontSize: 14, marginTop: 8}}>
+                {t('extension_current_version')}: {selectedExtension.version}
+              </div>
+            )}
           </Form.Item>
         )}
 
-        <Form.Item style={{ marginBottom: 0 }}>
-          <Flex justify="flex-end" gap={16}>
-            <Button type="text" style={{ width: 80 }} onClick={() => setUploadVisible(false)}>{t('footer_cancel')}</Button>
-            <Button type="primary" style={{ width: 80 }} onClick={() => form.submit()}>{t('footer_ok')}</Button>
+        <Form.Item style={{marginBottom: 0}}>
+          <Flex
+            justify="flex-end"
+            gap={16}
+          >
+            <Button
+              type="text"
+              style={{width: 80}}
+              onClick={() => setUploadVisible(false)}
+            >
+              {t('footer_cancel')}
+            </Button>
+            <Button
+              type="primary"
+              style={{width: 80}}
+              onClick={() => form.submit()}
+            >
+              {t('footer_ok')}
+            </Button>
           </Flex>
         </Form.Item>
       </Form>
@@ -447,57 +491,186 @@ const Extensions = () => {
   return (
     <div className="page-container">
       {contextHolder}
-      <Flex align="center" className="page-toolbar" style={{ marginBottom: 16 }}>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => { setSelectedExtension(undefined); setUploadVisible(true); }}>
+      <Flex
+        align="center"
+        className="page-toolbar"
+        style={{marginBottom: 16}}
+      >
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            setSelectedExtension(undefined);
+            setUploadVisible(true);
+          }}
+        >
           {t('extension_upload')}
         </Button>
       </Flex>
 
-      <div className="page-card" style={{ overflowY: 'auto' }}>
+      <div
+        className="page-card"
+        style={{overflowY: 'auto'}}
+      >
         <Row gutter={[16, 16]}>
-        {loading ? (
-          <Spin />
-        ) : (
-          extensions.map(ext => (
-            <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={4} key={ext.id}>
-              <Card hoverable title={ext.name} cover={ext.icon && <img alt={ext.name} src={ext.icon} />} extra={
-                <Dropdown menu={{ items: moreActionItems, onClick: ({key}) => handleExtensionAction(key, ext) }} trigger={['hover']} placement="bottomRight">
-                  <MoreOutlined style={{ cursor: 'pointer', fontSize: 18 }} />
-                </Dropdown>
-              } actions={[<Button type="link" onClick={() => { setSelectedExtension(ext); fetchExtensionWindows(ext.id!); setApplyModalVisible(true); }}>{t('extension_apply_to_window')}</Button>]}>
-                <Meta description={<Space direction="vertical"><Text type="secondary">ID: {ext.id}</Text><Text type="secondary">{t('extension_version')}: {ext.version}</Text><Text type="secondary">{t('extension_update_time')}: {ext.updated_at}</Text></Space>} />
-              </Card>
-            </Col>
-          ))
-        )}
-      </Row>
+          {loading ? (
+            <Spin />
+          ) : (
+            extensions.map(ext => (
+              <Col
+                xs={24}
+                sm={12}
+                md={8}
+                lg={6}
+                xl={6}
+                xxl={4}
+                key={ext.id}
+              >
+                <Card
+                  hoverable
+                  title={ext.name}
+                  cover={
+                    ext.icon && (
+                      <img
+                        alt={ext.name}
+                        src={ext.icon}
+                      />
+                    )
+                  }
+                  extra={
+                    <Dropdown
+                      menu={{
+                        items: moreActionItems,
+                        onClick: ({key}) => handleExtensionAction(key, ext),
+                      }}
+                      trigger={['hover']}
+                      placement="bottomRight"
+                    >
+                      <MoreOutlined style={{cursor: 'pointer', fontSize: 18}} />
+                    </Dropdown>
+                  }
+                  actions={[
+                    <Button
+                      type="link"
+                      onClick={() => {
+                        setSelectedExtension(ext);
+                        fetchExtensionWindows(ext.id!);
+                        setApplyModalVisible(true);
+                      }}
+                    >
+                      {t('extension_apply_to_window')}
+                    </Button>,
+                  ]}
+                >
+                  <Meta
+                    description={
+                      <Space direction="vertical">
+                        <Text type="secondary">ID: {ext.id}</Text>
+                        <Text type="secondary">
+                          {t('extension_version')}: {ext.version}
+                        </Text>
+                        <Text type="secondary">
+                          {t('extension_update_time')}: {ext.updated_at}
+                        </Text>
+                      </Space>
+                    }
+                  />
+                </Card>
+              </Col>
+            ))
+          )}
+        </Row>
       </div>
 
-      <Modal title={<Typography style={{ fontSize: 20, fontWeight: 'bold' }}>{selectedExtension ? t('extension_update2') : t('extension_upload2')}</Typography>} open={uploadVisible} onCancel={handleModalClose} footer={null} width={640}>
+      <Modal
+        title={
+          <Typography style={{fontSize: 20, fontWeight: 'bold'}}>
+            {selectedExtension ? t('extension_update2') : t('extension_upload2')}
+          </Typography>
+        }
+        open={uploadVisible}
+        onCancel={handleModalClose}
+        footer={null}
+        width={640}
+      >
         <UploadForm />
       </Modal>
 
-      <Modal title={<Typography style={{ fontSize: 20, fontWeight: 'bold' }}>{t('extension_apply_to_window')}</Typography>} open={applyModalVisible} onOk={handleApplyToWindow} onCancel={() => setApplyModalVisible(false)}>
-        <div style={{ padding: 16 }}>
-          <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
-            <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} style={{ fontSize: 16, fontWeight: 500 }}>{t('extension_select_all')}</Checkbox>
+      <Modal
+        title={
+          <Typography style={{fontSize: 20, fontWeight: 'bold'}}>
+            {t('extension_apply_to_window')}
+          </Typography>
+        }
+        open={applyModalVisible}
+        onOk={handleApplyToWindow}
+        onCancel={() => setApplyModalVisible(false)}
+      >
+        <div style={{padding: 16}}>
+          <Flex
+            justify="space-between"
+            align="center"
+            style={{marginBottom: 16}}
+          >
+            <Checkbox
+              indeterminate={indeterminate}
+              onChange={onCheckAllChange}
+              checked={checkAll}
+              style={{fontSize: 16, fontWeight: 500}}
+            >
+              {t('extension_select_all')}
+            </Checkbox>
             <Space size={16}>
-              <Select defaultValue={-1} defaultActiveFirstOption style={{width: 120}} fieldNames={{value: 'id', label: 'name'}} onChange={handleGroupChange} options={groupOptions} />
-              <Input value={searchValue} style={{ width: 200 }} placeholder={t('search_window')} onChange={e => handleSearchValueChange(e.target.value)} prefix={<SearchOutlined />} />
+              <Select
+                defaultValue={-1}
+                defaultActiveFirstOption
+                style={{width: 120}}
+                fieldNames={{value: 'id', label: 'name'}}
+                onChange={handleGroupChange}
+                options={groupOptions}
+              />
+              <Input
+                value={searchValue}
+                style={{width: 200}}
+                placeholder={t('search_window')}
+                onChange={e => handleSearchValueChange(e.target.value)}
+                prefix={<SearchOutlined />}
+              />
             </Space>
           </Flex>
-          <Divider style={{ margin: '8px 0' }} />
-          <div style={{ maxHeight: 400, overflowY: 'auto', paddingRight: 8 }}>
-            <CheckboxGroup value={selectedWindows} onChange={onChange}>
+          <Divider style={{margin: '8px 0'}} />
+          <div style={{maxHeight: 400, overflowY: 'auto', paddingRight: 8}}>
+            <CheckboxGroup
+              value={selectedWindows}
+              onChange={onChange}
+            >
               <Row gutter={[16, 8]}>
                 <Col span={24}>
                   {windows.map(w => (
-                    <div key={w.id} style={{ padding: 8, borderRadius: 6, transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = '#f9fafb')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                    <div
+                      key={w.id}
+                      style={{padding: 8, borderRadius: 6, transition: 'background 0.2s'}}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#f9fafb')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
                       <Checkbox value={w.id}>
                         <Space>
                           <Text type="secondary">#{w.id}</Text>
                           <Text strong>{w.name}</Text>
-                          {w.group_name && <Text type="secondary" style={{ padding: '2px 8px', background: '#eff6ff', color: '#2563eb', borderRadius: 4, fontSize: 12 }}>{w.group_name}</Text>}
+                          {w.group_name && (
+                            <Text
+                              type="secondary"
+                              style={{
+                                padding: '2px 8px',
+                                background: '#eff6ff',
+                                color: '#2563eb',
+                                borderRadius: 4,
+                                fontSize: 12,
+                              }}
+                            >
+                              {w.group_name}
+                            </Text>
+                          )}
                         </Space>
                       </Checkbox>
                     </div>

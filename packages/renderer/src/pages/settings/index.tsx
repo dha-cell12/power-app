@@ -65,24 +65,82 @@ const Settings = () => {
 
   return (
     <div className="page-container">
-      <Card variant="borderless" className="page-card" style={{ padding: 24 }}>
-        <Form name="settingsForm" labelCol={{span: 5}} size="large" form={form} initialValues={formValue} onValuesChange={handleFormValueChange} style={{ maxWidth: 600 }}>
-          <Form.Item<FieldType> label={t('settings_cache_path')} name="profileCachePath">
+      <Card
+        variant="borderless"
+        className="page-card"
+        style={{padding: 24}}
+      >
+        <Form
+          name="settingsForm"
+          labelCol={{span: 5}}
+          size="large"
+          form={form}
+          initialValues={formValue}
+          onValuesChange={handleFormValueChange}
+          style={{maxWidth: 600}}
+        >
+          <Form.Item<FieldType>
+            label={t('settings_cache_path')}
+            name="profileCachePath"
+          >
             <Space.Compact style={{width: '100%'}}>
-              <Input readOnly disabled value={formValue.profileCachePath} />
-              <Button type="default" onClick={() => handleChoosePath('profileCachePath', 'openDirectory')}>{t('settings_choose_cache_path')}</Button>
+              <Input
+                readOnly
+                disabled
+                value={formValue.profileCachePath}
+              />
+              <Button
+                type="default"
+                onClick={() => handleChoosePath('profileCachePath', 'openDirectory')}
+              >
+                {t('settings_choose_cache_path')}
+              </Button>
             </Space.Compact>
           </Form.Item>
-          <Form.Item<FieldType> label={t('settings_chrome_path')} name="localChromePath" style={{visibility: formValue.useLocalChrome ? 'visible' : 'hidden', minHeight: formValue.useLocalChrome ? 'auto' : 0, marginBottom: formValue.useLocalChrome ? 24 : 0}}>
+          <Form.Item<FieldType>
+            label={t('settings_chrome_path')}
+            name="localChromePath"
+            style={{
+              visibility: formValue.useLocalChrome ? 'visible' : 'hidden',
+              minHeight: formValue.useLocalChrome ? 'auto' : 0,
+              marginBottom: formValue.useLocalChrome ? 24 : 0,
+            }}
+          >
             <Space.Compact style={{width: '100%', opacity: formValue.useLocalChrome ? 1 : 0}}>
-              <Input readOnly disabled value={formValue.localChromePath} />
-              <Button type="default" onClick={() => handleChoosePath('localChromePath', 'openFile')}>{t('settings_choose_cache_path')}</Button>
+              <Input
+                readOnly
+                disabled
+                value={formValue.localChromePath}
+              />
+              <Button
+                type="default"
+                onClick={() => handleChoosePath('localChromePath', 'openFile')}
+              >
+                {t('settings_choose_cache_path')}
+              </Button>
             </Space.Compact>
           </Form.Item>
-          <Form.Item<FieldType> label={t('setting_chromium_path')} name="chromiumBinPath" style={{visibility: formValue.useLocalChrome ? 'hidden' : 'visible', minHeight: formValue.useLocalChrome ? 0 : 'auto', marginBottom: formValue.useLocalChrome ? 0 : 24}}>
+          <Form.Item<FieldType>
+            label={t('setting_chromium_path')}
+            name="chromiumBinPath"
+            style={{
+              visibility: formValue.useLocalChrome ? 'hidden' : 'visible',
+              minHeight: formValue.useLocalChrome ? 0 : 'auto',
+              marginBottom: formValue.useLocalChrome ? 0 : 24,
+            }}
+          >
             <Space.Compact style={{width: '100%', opacity: formValue.useLocalChrome ? 0 : 1}}>
-              <Input readOnly disabled value={formValue.chromiumBinPath} />
-              <Button type="default" onClick={() => handleChoosePath('chromiumBinPath', 'openFile')}>{t('settings_choose_cache_path')}</Button>
+              <Input
+                readOnly
+                disabled
+                value={formValue.chromiumBinPath}
+              />
+              <Button
+                type="default"
+                onClick={() => handleChoosePath('chromiumBinPath', 'openFile')}
+              >
+                {t('settings_choose_cache_path')}
+              </Button>
             </Space.Compact>
           </Form.Item>
           <Form.Item<FieldType>
@@ -94,7 +152,9 @@ const Settings = () => {
               rows={3}
               placeholder="--restore-last-session&#10;--disable-extensions"
               value={formValue.chromeLaunchArgs}
-              onChange={(e) => handleFormValueChange({...formValue, chromeLaunchArgs: e.target.value})}
+              onChange={e =>
+                handleFormValueChange({...formValue, chromeLaunchArgs: e.target.value})
+              }
             />
           </Form.Item>
         </Form>

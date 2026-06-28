@@ -8,7 +8,7 @@ import {execSync, spawn} from 'child_process';
 import * as portscanner from 'portscanner';
 import {sleep} from '../utils/sleep';
 import SocksServer from '../proxy-server/socks-server';
-import type {DB, SafeAny} from '../../../shared/types/db';
+import type {DB} from '../../../shared/types/db';
 import {type IncomingMessage, type Server, type ServerResponse} from 'http';
 import {createLogger} from '../../../shared/utils/logger';
 import {WINDOW_LOGGER_LABEL} from '../constants';

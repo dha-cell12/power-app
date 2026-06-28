@@ -28,8 +28,15 @@ const WindowDetailTabs = ({
       label: t('window_detail_create'),
       forceRender: true,
       children: (
-        <Flex gap={48} style={{ width: '100%' }}>
-          {WindowEditForm({ loading: false, formValue: formValue, formChangeCallback: formValueChangeCallback })}
+        <Flex
+          gap={48}
+          style={{width: '100%'}}
+        >
+          {WindowEditForm({
+            loading: false,
+            formValue: formValue,
+            formChangeCallback: formValueChangeCallback,
+          })}
         </Flex>
       ),
     },
@@ -110,11 +117,19 @@ const WindowDetail = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Card style={{ flex: 1, overflow: 'auto' }}>
+    <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+      <Card style={{flex: 1, overflow: 'auto'}}>
         {searchParams.get('id') ? (
-          <Flex gap={48} align="flex-start" style={{ padding: 16 }}>
-            <WindowEditForm loading={loading} formValue={formValue} formChangeCallback={formValueChangeCallback} />
+          <Flex
+            gap={48}
+            align="flex-start"
+            style={{padding: 16}}
+          >
+            <WindowEditForm
+              loading={loading}
+              formValue={formValue}
+              formChangeCallback={formValueChangeCallback}
+            />
             <FingerprintInfo fingerprints={fingerprints} />
           </Flex>
         ) : (
@@ -126,7 +141,12 @@ const WindowDetail = () => {
           />
         )}
       </Card>
-      <WindowDetailFooter loading={loading} currentTab={currentTab} formValue={formValue} fingerprints={fingerprints} />
+      <WindowDetailFooter
+        loading={loading}
+        currentTab={currentTab}
+        formValue={formValue}
+        fingerprints={fingerprints}
+      />
     </div>
   );
 };

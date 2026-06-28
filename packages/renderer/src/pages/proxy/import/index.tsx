@@ -35,9 +35,11 @@ const ProxyImportFooter = ({proxies}: {proxies: DB.Proxy[]}) => {
     messageApi.open({type: 'loading', content: 'Importing...', key: 'import'}).then(async () => {
       const createdIds = await ProxyBridge?.import(proxies);
       if (createdIds.length) {
-        messageApi.open({ type: 'success', content: `Imported successfully`, key: 'import' }).then(() => navigate('/proxy'));
+        messageApi
+          .open({type: 'success', content: `Imported successfully`, key: 'import'})
+          .then(() => navigate('/proxy'));
       } else {
-        messageApi.open({ type: 'error', content: 'Import failed, please try again', key: 'import' });
+        messageApi.open({type: 'error', content: 'Import failed, please try again', key: 'import'});
       }
     });
   };
@@ -45,9 +47,26 @@ const ProxyImportFooter = ({proxies}: {proxies: DB.Proxy[]}) => {
   return (
     <>
       {contextHolder}
-      <Flex justify="flex-start" gap={16} style={{ padding: '8px 24px', background: 'white', width: '100%' }}>
-        <Button loading={loading} type="primary" style={{ width: 80 }} onClick={handleOk}>{t('footer_ok')}</Button>
-        <Button type="text" style={{ width: 80 }} onClick={() => history.back()}>{t('footer_cancel')}</Button>
+      <Flex
+        justify="flex-start"
+        gap={16}
+        style={{padding: '8px 24px', background: 'white', width: '100%'}}
+      >
+        <Button
+          loading={loading}
+          type="primary"
+          style={{width: 80}}
+          onClick={handleOk}
+        >
+          {t('footer_ok')}
+        </Button>
+        <Button
+          type="text"
+          style={{width: 80}}
+          onClick={() => history.back()}
+        >
+          {t('footer_cancel')}
+        </Button>
       </Flex>
     </>
   );
@@ -228,26 +247,52 @@ const ProxyImport = () => {
 
   return (
     <>
-      <Card style={{ height: `calc(100% - 60px)` }}>
+      <Card style={{height: `calc(100% - 60px)`}}>
         <Row gutter={18}>
           <Col span={12}>
-            <Card bodyStyle={{ padding: 12 }}>
-              <Space direction="vertical" size={4}>
-                {t('proxy_import_tip').split('\n').map((item, index) => (
-                  <Text key={index}>{item}</Text>
-                ))}
+            <Card bodyStyle={{padding: 12}}>
+              <Space
+                direction="vertical"
+                size={4}
+              >
+                {t('proxy_import_tip')
+                  .split('\n')
+                  .map((item, index) => (
+                    <Text key={index}>{item}</Text>
+                  ))}
               </Space>
             </Card>
           </Col>
           <Col span={12}>
-            <Input.TextArea value={inputValue} onChange={e => setInputValue(e.target.value)} onBlur={e => onTextAreaBlur(e)} style={{ height: '100%', minHeight: 300 }} />
+            <Input.TextArea
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+              onBlur={e => onTextAreaBlur(e)}
+              style={{height: '100%', minHeight: 300}}
+            />
           </Col>
         </Row>
-        <Flex align="center" gap={16} style={{ margin: '16px 0' }}>
-          <Button type="primary" loading={checking} onClick={() => testAll()}>{t('proxy_check_all')}</Button>
+        <Flex
+          align="center"
+          gap={16}
+          style={{margin: '16px 0'}}
+        >
+          <Button
+            type="primary"
+            loading={checking}
+            onClick={() => testAll()}
+          >
+            {t('proxy_check_all')}
+          </Button>
           <Text>{`${t('proxy_total')}: ${importData.length}`}</Text>
         </Flex>
-        <Table columns={columns} rowKey={'id'} pagination={false} dataSource={importData} scroll={{y: tableScrollY}} />
+        <Table
+          columns={columns}
+          rowKey={'id'}
+          pagination={false}
+          dataSource={importData}
+          scroll={{y: tableScrollY}}
+        />
       </Card>
       <ProxyImportFooter proxies={importData.map(proxy => transformProxy(proxy))} />
     </>

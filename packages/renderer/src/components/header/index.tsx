@@ -1,6 +1,12 @@
 import type {MenuProps} from 'antd';
 import {Avatar, Button, Dropdown, Layout, Breadcrumb} from 'antd';
-import {CloseOutlined, MinusOutlined, BorderOutlined, BlockOutlined, UserOutlined} from '@ant-design/icons';
+import {
+  CloseOutlined,
+  MinusOutlined,
+  BorderOutlined,
+  BlockOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import {useState} from 'react';
 import {customizeToolbarControl} from '#preload';
 import type {MenuInfo} from 'rc-menu/lib/interface';
@@ -87,13 +93,14 @@ export default function Header() {
   return (
     <AntdHeader className="app-header">
       <div className="header-drag-area draggable">
-        <img src={logo} alt="logo" className="header-logo" />
+        <img
+          src={logo}
+          alt="logo"
+          className="header-logo"
+        />
         <Breadcrumb
           className="header-breadcrumb"
-          items={[
-            { title: t('app_name') },
-            { title: pageTitle },
-          ]}
+          items={[{title: t('app_name')}, {title: pageTitle}]}
         />
       </div>
       <div className="header-actions">
@@ -101,7 +108,11 @@ export default function Header() {
           menu={{items, onClick: menuInfo => dropdownAction(menuInfo)}}
           trigger={['click']}
         >
-          <Avatar size={28} style={{ backgroundColor: token.colorPrimary, cursor: 'pointer', marginRight: 10 }} icon={<UserOutlined />} />
+          <Avatar
+            size={28}
+            style={{backgroundColor: token.colorPrimary, cursor: 'pointer', marginRight: 10}}
+            icon={<UserOutlined />}
+          />
         </Dropdown>
         <Button
           icon={<MinusOutlined />}
